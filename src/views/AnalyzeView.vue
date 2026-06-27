@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="page">
     <!-- Hero -->
     <div class="hero">
@@ -7,7 +7,7 @@
         <span class="hero-gradient">On-chain. For real.</span>
       </h1>
       <p class="hero-sub">
-        AI validators on GenLayer Bradbury score your CV across 5 dimensions —
+        AI validators on GenLayer Bradbury score your CV across 5 dimensions â€”
         technical skills, experience, education, achievements, and presentation.
         Results are immutable and publicly verifiable.
       </p>
@@ -18,10 +18,10 @@
       <!-- PDF upload tab -->
       <div class="mode-tabs">
         <button :class="['mode-tab', inputMode === 'pdf' ? 'active' : '']" @click="inputMode = 'pdf'">
-          📄 Upload PDF
+          ðŸ“„ Upload PDF
         </button>
         <button :class="['mode-tab', inputMode === 'text' ? 'active' : '']" @click="inputMode = 'text'">
-          ✏️ Paste Text
+          âœï¸ Paste Text
         </button>
       </div>
 
@@ -38,17 +38,17 @@
         <input ref="fileInput" type="file" accept=".pdf" style="display:none" @change="onFileChange" />
         <div v-if="isExtracting" class="drop-content">
           <div class="spinner" />
-          <span>Extracting text from PDF…</span>
+          <span>Extracting text from PDFâ€¦</span>
         </div>
         <div v-else-if="cvFile" class="drop-content">
-          <span style="font-size:28px">✅</span>
+          <span style="font-size:28px">âœ…</span>
           <span class="drop-name">{{ cvFile.name }}</span>
           <span class="drop-hint">Click to replace</span>
         </div>
         <div v-else class="drop-content">
-          <span style="font-size:32px">📄</span>
+          <span style="font-size:32px">ðŸ“„</span>
           <span class="drop-main">Drop your CV here, or click to browse</span>
-          <span class="drop-hint">PDF only · max 10 MB</span>
+          <span class="drop-hint">PDF only Â· max 10 MB</span>
         </div>
       </div>
 
@@ -57,7 +57,7 @@
         <textarea
           v-model="cvText"
           class="cv-textarea"
-          placeholder="Paste your full CV text here…"
+          placeholder="Paste your full CV text hereâ€¦"
           rows="12"
         />
       </div>
@@ -68,7 +68,7 @@
         v-model="targetRole"
         class="input-field"
         type="text"
-        placeholder="e.g. Full Stack Engineer, Product Manager, Data Analyst…"
+        placeholder="e.g. Full Stack Engineer, Product Manager, Data Analystâ€¦"
         style="margin-bottom: 16px"
         @keydown.enter="submit"
       />
@@ -87,7 +87,7 @@
       </div>
 
       <!-- Error -->
-      <div v-if="error" class="error-box">⚠ {{ error }}</div>
+      <div v-if="error" class="error-box">âš  {{ error }}</div>
 
       <!-- Submit -->
       <button class="btn-primary" :disabled="isSubmitting" @click="submit" style="margin-top: 4px">
@@ -97,7 +97,7 @@
       <!-- Chain info pill -->
       <div class="chain-pill">
         <span class="chain-dot" />
-        GenLayer Bradbury Testnet · Chain ID 4221 · Consensus takes 3–5 min
+        GenLayer Bradbury Testnet Â· Chain ID 4221 Â· Consensus takes 3â€“5 min
       </div>
     </div>
 
@@ -117,7 +117,7 @@
             }"
           >
             <div class="stage-icon">
-              <span v-if="currentStage > i">✓</span>
+              <span v-if="currentStage > i">âœ“</span>
               <div v-else-if="currentStage === i" class="spinner" />
               <span v-else>{{ i + 1 }}</span>
             </div>
@@ -131,10 +131,10 @@
             :href="`https://explorer-bradbury.genlayer.com/tx/${txHash}`"
             target="_blank"
             class="tx-link"
-          >{{ shortHash(txHash) }} ↗</a>
+          >{{ shortHash(txHash) }} â†—</a>
         </p>
         <p class="consensus-note">
-          AI validators are independently analyzing your CV — this takes 3–5 minutes.
+          AI validators are independently analyzing your CV â€” this takes 3â€“5 minutes.
         </p>
       </div>
     </div>
@@ -145,11 +145,11 @@
         <div>
           <h2 class="results-title">Analysis Complete</h2>
           <p class="results-meta">
-            {{ targetRole }} ·
+            {{ targetRole }} Â·
             <span style="color: var(--muted)">{{ expLevel }} level</span>
           </p>
         </div>
-        <button class="btn-ghost" @click="reset">← Analyze Another</button>
+        <button class="btn-ghost" @click="reset">â† Analyze Another</button>
       </div>
 
       <!-- Score + Verdict row -->
@@ -248,7 +248,7 @@
         <div class="card">
           <div class="card-label">Key Strengths</div>
           <div v-for="(s, i) in result.strengths" :key="i" class="strength-item">
-            <span class="check">✓</span>
+            <span class="check">âœ“</span>
             <span>{{ s }}</span>
           </div>
         </div>
@@ -263,12 +263,12 @@
 
       <!-- On-chain proof -->
       <div v-if="txHash" class="proof-bar">
-        <span>⛓ Stored on GenLayer Bradbury</span>
+        <span>â›“ Stored on GenLayer Bradbury</span>
         <a
           :href="`https://explorer-bradbury.genlayer.com/tx/${txHash}`"
           target="_blank"
           class="tx-link"
-        >View transaction ↗</a>
+        >View transaction â†—</a>
       </div>
     </div>
   </div>
@@ -283,12 +283,12 @@ import { connectWallet, walletAddress, isConnected, writeWithRetry, readContract
 ;(pdfjsLib as any).GlobalWorkerOptions.workerSrc =
   `https://unpkg.com/pdfjs-dist@${(pdfjsLib as any).version}/build/pdf.worker.min.js`
 
-// ── State ─────────────────────────────────────────────────────────────
+// â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const inputMode = ref<'pdf' | 'text'>('pdf')
 const cvFile    = ref<File | null>(null)
 const cvText    = ref('')
 const targetRole = ref('')
-const expLevel  = ref<'entry' | 'mid' | 'senior'>('mid')
+const expLevel  = ref('mid')
 const dragOver  = ref(false)
 const isExtracting = ref(false)
 const isSubmitting = ref(false)
@@ -300,11 +300,11 @@ const fileInput = ref<HTMLInputElement | null>(null)
 
 let statusInterval: ReturnType<typeof setInterval> | null = null
 
-// ── Constants ─────────────────────────────────────────────────────────
+// â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const levels = [
-  { id: 'entry',  icon: '🌱', label: 'Entry'     },
-  { id: 'mid',    icon: '⚡', label: 'Mid-Level'  },
-  { id: 'senior', icon: '🚀', label: 'Senior'    },
+  { id: 'entry',  icon: 'ðŸŒ±', label: 'Entry'     },
+  { id: 'mid',    icon: 'âš¡', label: 'Mid-Level'  },
+  { id: 'senior', icon: 'ðŸš€', label: 'Senior'    },
 ]
 
 const stages = [
@@ -324,12 +324,12 @@ const categories = [
 ]
 
 const expMap: Record<string, string> = {
-  entry:  'entry/graduate (0–2 years)',
-  mid:    'mid-level (2–5 years)',
+  entry:  'entry/graduate (0â€“2 years)',
+  mid:    'mid-level (2â€“5 years)',
   senior: 'senior (5+ years)',
 }
 
-// ── PDF helpers ───────────────────────────────────────────────────────
+// â”€â”€ PDF helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function extractPdf(file: File): Promise<string> {
   const buf = await file.arrayBuffer()
   const pdf = await (pdfjsLib as any).getDocument({ data: buf }).promise
@@ -372,7 +372,7 @@ function onDrop(e: DragEvent) {
   if (f) handleFile(f)
 }
 
-// ── Submit ────────────────────────────────────────────────────────────
+// â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function submit() {
   if (!cvText.value.trim()) { error.value = 'Please provide your CV content.'; return }
   if (!targetRole.value.trim()) { error.value = 'Please enter a target role.'; return }
@@ -438,7 +438,7 @@ onUnmounted(() => {
   if (statusInterval) clearInterval(statusInterval)
 })
 
-// ── Display helpers ───────────────────────────────────────────────────
+// â”€â”€ Display helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function scoreColor(s: number): string {
   return s >= 80 ? '#34D399' : s >= 60 ? '#FBBF24' : '#F87171'
 }
@@ -862,3 +862,4 @@ function shortHash(h: string): string {
   color: var(--dim);
 }
 </style>
+
