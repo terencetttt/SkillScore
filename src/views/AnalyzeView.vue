@@ -2,7 +2,7 @@
   <div class="page">
     <!-- Hero -->
     <div class="hero">
-      <div class="hero-badge">✦ Powered by GenLayer Bradbury</div>
+      <div class="hero-badge">Powered by GenLayer Bradbury</div>
       <h1 class="hero-title">
         Know your CV score<br />
         <span class="hero-gradient">before the interview.</span>
@@ -12,11 +12,11 @@
         Results are immutable, verifiable, and stored on-chain forever.
       </p>
       <div class="hero-features">
-        <span class="feat">📄 PDF Upload</span>
-        <span class="feat">🎯 Role-Specific</span>
-        <span class="feat">⛓ On-Chain</span>
-        <span class="feat">🤖 AI Validators</span>
-        <span class="feat">📊 5 Dimensions</span>
+        <span class="feat">PDF Upload</span>
+        <span class="feat">Role-Specific</span>
+        <span class="feat">On-Chain Results</span>
+        <span class="feat">AI Validators</span>
+        <span class="feat">5 Dimensions</span>
       </div>
     </div>
 
@@ -55,11 +55,10 @@
           </div>
           <div v-else class="drop-inner">
             <div class="drop-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="12" y1="18" x2="12" y2="12"/>
-                <polyline points="9 15 12 12 15 15"/>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
             </div>
             <span class="drop-main">Drop your CV here or click to browse</span>
@@ -115,7 +114,7 @@
         </button>
 
         <div class="chain-note">
-          <span class="chain-dot-live" /> AI consensus · ~3–5 min · results stored on-chain
+          <span class="chain-dot-live" /> AI consensus · results stored on-chain
         </div>
       </div>
     </div>
@@ -299,7 +298,7 @@
 
       <!-- On-chain proof -->
       <div v-if="txHash" class="proof-bar">
-        <span class="proof-icon">⛓</span>
+        
         <span>Analysis stored on-chain — immutable & publicly verifiable</span>
         <a :href="`https://explorer-bradbury.genlayer.com/tx/${txHash}`" target="_blank" class="tx-link">
           View on explorer ↗

@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="archive-head">
       <div>
-        <div class="head-badge">⛓ On-Chain Archive</div>
+        <div class="head-badge">On-Chain Archive</div>
         <h1 class="head-title">All CV Analyses</h1>
         <p class="head-sub">Every analysis stored on-chain — immutable, public, verifiable.</p>
       </div>
