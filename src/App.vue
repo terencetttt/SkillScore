@@ -19,8 +19,8 @@
                 fill="none" stroke="white" stroke-width="0.7" opacity="0.4" />
               <defs>
                 <linearGradient id="logo-grad" x1="0" y1="0" x2="22" y2="24" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#00C8E8" />
-                  <stop offset="1" stop-color="#00E5CC" />
+                  <stop stop-color="#E8A800" />
+                  <stop offset="1" stop-color="#C48C0A" />
                 </linearGradient>
               </defs>
             </svg>
@@ -37,11 +37,19 @@
         <!-- Right side -->
         <div class="nav-right">
           <!-- Theme toggle -->
-          <button class="theme-toggle" @click="toggleTheme" :title="theme === 'light' ? 'Switch to dark' : 'Switch to light'">
+          <button class="theme-toggle" @click="toggleTheme" :title="theme === 'light' ? 'Dark mode' : 'Light mode'">
             <span class="toggle-track">
               <span class="toggle-thumb">
-                <span v-if="theme === 'light'">☀️</span>
-                <span v-else>🌙</span>
+                <svg v-if="theme === 'light'" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <circle cx="12" cy="12" r="4"/>
+                  <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+                  <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/>
+                  <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+                  <line x1="6.34" y1="17.66" x2="4.93" y2="19.07"/><line x1="19.07" y1="4.93" x2="17.66" y2="6.34"/>
+                </svg>
+                <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
               </span>
             </span>
           </button>
@@ -96,37 +104,67 @@ async function connect() {
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── Light mode — clean white + cyan ────────────────── */
+/* ── Light mode — warm white + gold ─────────────────── */
 :root {
-  --bg:         #F0FDFF;
+  --bg:         #FDFBF5;
   --surface:    #FFFFFF;
-  --surf2:      #E6FBFF;
-  --border:     rgba(0,200,232,0.18);
-  --border2:    rgba(0,200,232,0.35);
-  --text:       #08191D;
-  --muted:      #2E7A8A;
-  --dim:        #7ABAC8;
-  --accent:     #00C8E8;
-  --accent-lt:  #00E5FF;
-  --accent-dim: rgba(0,200,232,0.12);
-  --accent2:    #00E5CC;
-  --green:      #00A87A;
-  --green-dim:  rgba(0,168,122,0.10);
-  --green-bdr:  rgba(0,168,122,0.28);
-  --amber:      #E08A00;
-  --amber-dim:  rgba(224,138,0,0.10);
-  --amber-bdr:  rgba(224,138,0,0.28);
-  --red:        #E8003A;
-  --red-dim:    rgba(232,0,58,0.10);
-  --red-bdr:    rgba(232,0,58,0.28);
-  --shadow-sm:  0 2px 8px rgba(0,200,232,0.10);
-  --shadow-md:  0 8px 28px rgba(0,200,232,0.15);
-  --shadow-lg:  0 20px 60px rgba(0,200,232,0.20);
-  --glass-bg:   rgba(255,255,255,0.82);
-  --glass-bdr:  rgba(0,200,232,0.22);
+  --surf2:      #FFF8E8;
+  --border:     rgba(196,140,10,0.18);
+  --border2:    rgba(196,140,10,0.32);
+  --text:       #1A1200;
+  --muted:      #7A6020;
+  --dim:        #C4A855;
+  --accent:     #C48C0A;
+  --accent-lt:  #E8A800;
+  --accent-dim: rgba(196,140,10,0.10);
+  --accent2:    #D4720A;
+  --green:      #059669;
+  --green-dim:  rgba(5,150,105,0.10);
+  --green-bdr:  rgba(5,150,105,0.28);
+  --amber:      #B45309;
+  --amber-dim:  rgba(180,83,9,0.10);
+  --amber-bdr:  rgba(180,83,9,0.28);
+  --red:        #DC2626;
+  --red-dim:    rgba(220,38,38,0.10);
+  --red-bdr:    rgba(220,38,38,0.28);
+  --shadow-sm:  0 2px 8px rgba(196,140,10,0.10);
+  --shadow-md:  0 8px 28px rgba(196,140,10,0.15);
+  --shadow-lg:  0 20px 60px rgba(196,140,10,0.18);
+  --glass-bg:   rgba(255,255,255,0.85);
+  --glass-bdr:  rgba(196,140,10,0.20);
   --font-head:  'Outfit', sans-serif;
   --font-body:  'Inter', system-ui, sans-serif;
   --font-num:   'Space Grotesk', sans-serif;
+}
+
+/* ── Dark mode — pure black + gold ──────────────────── */
+[data-theme="dark"] {
+  --bg:         #050400;
+  --surface:    #110E00;
+  --surf2:      #181200;
+  --border:     rgba(240,180,0,0.20);
+  --border2:    rgba(240,180,0,0.38);
+  --text:       #FFF8DC;
+  --muted:      #C4A030;
+  --dim:        #5A4800;
+  --accent:     #F0B800;
+  --accent-lt:  #FFD000;
+  --accent-dim: rgba(240,184,0,0.15);
+  --accent2:    #FFB700;
+  --green:      #34D399;
+  --green-dim:  rgba(52,211,153,0.12);
+  --green-bdr:  rgba(52,211,153,0.30);
+  --amber:      #FBBF24;
+  --amber-dim:  rgba(251,191,36,0.12);
+  --amber-bdr:  rgba(251,191,36,0.30);
+  --red:        #FF4444;
+  --red-dim:    rgba(255,68,68,0.12);
+  --red-bdr:    rgba(255,68,68,0.30);
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.55);
+  --shadow-md:  0 8px 28px rgba(240,184,0,0.08);
+  --shadow-lg:  0 20px 60px rgba(0,0,0,0.75);
+  --glass-bg:   rgba(6,5,0,0.95);
+  --glass-bdr:  rgba(240,184,0,0.18);
 }
 
 /* ── Dark mode — pure black + neon cyan ─────────────── */
@@ -195,21 +233,21 @@ body {
 
 .blob-1 {
   width: 600px; height: 600px;
-  background: radial-gradient(circle, #00C8E8, transparent 70%);
+  background: radial-gradient(circle, #E8A800, transparent 70%);
   top: -200px; left: -150px;
   animation-delay: 0s;
 }
 
 .blob-2 {
   width: 500px; height: 500px;
-  background: radial-gradient(circle, #00E5CC, transparent 70%);
+  background: radial-gradient(circle, #C48C0A, transparent 70%);
   top: 30%; right: -150px;
   animation-delay: -4s;
 }
 
 .blob-3 {
   width: 400px; height: 400px;
-  background: radial-gradient(circle, #00D4F0, transparent 70%);
+  background: radial-gradient(circle, #F0C030, transparent 70%);
   bottom: -100px; left: 30%;
   animation-delay: -8s;
 }
@@ -368,9 +406,9 @@ body {
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 12px rgba(108,71,255,0.35);
+  box-shadow: 0 2px 12px rgba(196,140,10,0.35);
 }
-.btn-connect:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(108,71,255,0.45); }
+.btn-connect:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(196,140,10,0.45); }
 
 .explorer-btn {
   font-size: 11px;
@@ -461,7 +499,7 @@ body {
   gap: 8px;
   width: 100%;
   padding: 15px;
-  background: linear-gradient(135deg, var(--accent), #5B35E8);
+  background: linear-gradient(135deg, #E8A800, #C47800);
   border: none;
   border-radius: 14px;
   color: #fff;
@@ -469,7 +507,7 @@ body {
   font-weight: 700;
   font-family: var(--font-head);
   cursor: pointer;
-  box-shadow: 0 4px 24px rgba(108,71,255,0.40);
+  box-shadow: 0 4px 24px rgba(196,140,10,0.40);
   transition: all 0.25s;
   position: relative;
   overflow: hidden;
@@ -483,7 +521,7 @@ body {
   transition: left 0.5s;
 }
 .btn-primary:hover::before { left: 100%; }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(108,71,255,0.50); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(196,140,10,0.50); }
 .btn-primary:disabled {
   background: var(--surf2);
   color: var(--dim);
