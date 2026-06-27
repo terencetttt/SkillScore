@@ -19,8 +19,8 @@
                 fill="none" stroke="white" stroke-width="0.7" opacity="0.4" />
               <defs>
                 <linearGradient id="logo-grad" x1="0" y1="0" x2="22" y2="24" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#6C47FF" />
-                  <stop offset="1" stop-color="#00C6AE" />
+                  <stop stop-color="#00C8E8" />
+                  <stop offset="1" stop-color="#00E5CC" />
                 </linearGradient>
               </defs>
             </svg>
@@ -96,67 +96,67 @@ async function connect() {
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── Light mode (default) ───────────────────────────── */
+/* ── Light mode — clean white + cyan ────────────────── */
 :root {
-  --bg:         #EDF0FF;
+  --bg:         #F0FDFF;
   --surface:    #FFFFFF;
-  --surf2:      #F4F5FF;
-  --border:     rgba(108,71,255,0.12);
-  --border2:    rgba(108,71,255,0.22);
-  --text:       #0D0D2B;
-  --muted:      #6B6F94;
-  --dim:        #A8ABCC;
-  --accent:     #6C47FF;
-  --accent-lt:  #8B6FFF;
-  --accent-dim: rgba(108,71,255,0.10);
-  --accent2:    #00C6AE;
-  --green:      #059669;
-  --green-dim:  rgba(5,150,105,0.10);
-  --green-bdr:  rgba(5,150,105,0.25);
-  --amber:      #D97706;
-  --amber-dim:  rgba(217,119,6,0.10);
-  --amber-bdr:  rgba(217,119,6,0.25);
-  --red:        #E11D48;
-  --red-dim:    rgba(225,29,72,0.10);
-  --red-bdr:    rgba(225,29,72,0.25);
-  --shadow-sm:  0 2px 8px rgba(108,71,255,0.08);
-  --shadow-md:  0 8px 28px rgba(108,71,255,0.12);
-  --shadow-lg:  0 20px 60px rgba(108,71,255,0.18);
-  --glass-bg:   rgba(255,255,255,0.75);
-  --glass-bdr:  rgba(255,255,255,0.6);
+  --surf2:      #E6FBFF;
+  --border:     rgba(0,200,232,0.18);
+  --border2:    rgba(0,200,232,0.35);
+  --text:       #08191D;
+  --muted:      #2E7A8A;
+  --dim:        #7ABAC8;
+  --accent:     #00C8E8;
+  --accent-lt:  #00E5FF;
+  --accent-dim: rgba(0,200,232,0.12);
+  --accent2:    #00E5CC;
+  --green:      #00A87A;
+  --green-dim:  rgba(0,168,122,0.10);
+  --green-bdr:  rgba(0,168,122,0.28);
+  --amber:      #E08A00;
+  --amber-dim:  rgba(224,138,0,0.10);
+  --amber-bdr:  rgba(224,138,0,0.28);
+  --red:        #E8003A;
+  --red-dim:    rgba(232,0,58,0.10);
+  --red-bdr:    rgba(232,0,58,0.28);
+  --shadow-sm:  0 2px 8px rgba(0,200,232,0.10);
+  --shadow-md:  0 8px 28px rgba(0,200,232,0.15);
+  --shadow-lg:  0 20px 60px rgba(0,200,232,0.20);
+  --glass-bg:   rgba(255,255,255,0.82);
+  --glass-bdr:  rgba(0,200,232,0.22);
   --font-head:  'Outfit', sans-serif;
   --font-body:  'Inter', system-ui, sans-serif;
   --font-num:   'Space Grotesk', sans-serif;
 }
 
-/* ── Dark mode ──────────────────────────────────────── */
+/* ── Dark mode — pure black + neon cyan ─────────────── */
 [data-theme="dark"] {
   --bg:         #050812;
-  --surface:    #0C0F28;
-  --surf2:      #131735;
-  --border:     rgba(140,110,255,0.25);
-  --border2:    rgba(140,110,255,0.38);
-  --text:       #F0F2FF;
-  --muted:      #9498C8;
-  --dim:        #565880;
-  --accent:     #8B6FFF;
-  --accent-lt:  #A892FF;
-  --accent-dim: rgba(139,111,255,0.20);
-  --accent2:    #00E4C8;
-  --green:      #34D399;
-  --green-dim:  rgba(52,211,153,0.14);
-  --green-bdr:  rgba(52,211,153,0.32);
-  --amber:      #FBBF24;
-  --amber-dim:  rgba(251,191,36,0.14);
-  --amber-bdr:  rgba(251,191,36,0.32);
-  --red:        #FF6B8A;
-  --red-dim:    rgba(255,107,138,0.14);
-  --red-bdr:    rgba(255,107,138,0.32);
-  --shadow-sm:  0 2px 8px rgba(0,0,0,0.50);
-  --shadow-md:  0 8px 28px rgba(0,0,0,0.60);
-  --shadow-lg:  0 20px 60px rgba(0,0,0,0.70);
-  --glass-bg:   rgba(8,10,28,0.94);
-  --glass-bdr:  rgba(139,111,255,0.18);
+  --surface:    #08141E;
+  --surf2:      #0C1C28;
+  --border:     rgba(0,212,240,0.22);
+  --border2:    rgba(0,212,240,0.40);
+  --text:       #D8F8FF;
+  --muted:      #5AAFBF;
+  --dim:        #204A58;
+  --accent:     #00D4F0;
+  --accent-lt:  #00EEFF;
+  --accent-dim: rgba(0,212,240,0.15);
+  --accent2:    #00FFE0;
+  --green:      #00E5B4;
+  --green-dim:  rgba(0,229,180,0.12);
+  --green-bdr:  rgba(0,229,180,0.32);
+  --amber:      #FFB800;
+  --amber-dim:  rgba(255,184,0,0.12);
+  --amber-bdr:  rgba(255,184,0,0.32);
+  --red:        #FF3366;
+  --red-dim:    rgba(255,51,102,0.12);
+  --red-bdr:    rgba(255,51,102,0.32);
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.55);
+  --shadow-md:  0 8px 28px rgba(0,212,240,0.10);
+  --shadow-lg:  0 20px 60px rgba(0,0,0,0.75);
+  --glass-bg:   rgba(6,14,22,0.95);
+  --glass-bdr:  rgba(0,212,240,0.18);
 }
 
 body {
@@ -195,21 +195,21 @@ body {
 
 .blob-1 {
   width: 600px; height: 600px;
-  background: radial-gradient(circle, #6C47FF, transparent 70%);
+  background: radial-gradient(circle, #00C8E8, transparent 70%);
   top: -200px; left: -150px;
   animation-delay: 0s;
 }
 
 .blob-2 {
   width: 500px; height: 500px;
-  background: radial-gradient(circle, #00C6AE, transparent 70%);
+  background: radial-gradient(circle, #00E5CC, transparent 70%);
   top: 30%; right: -150px;
   animation-delay: -4s;
 }
 
 .blob-3 {
   width: 400px; height: 400px;
-  background: radial-gradient(circle, #8B6FFF, transparent 70%);
+  background: radial-gradient(circle, #00D4F0, transparent 70%);
   bottom: -100px; left: 30%;
   animation-delay: -8s;
 }

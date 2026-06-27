@@ -503,7 +503,7 @@ function ringOffset(score: number): number {
 }
 
 .hero-gradient {
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  background: linear-gradient(135deg, #00C8E8, #00E5CC);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
