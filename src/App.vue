@@ -190,7 +190,8 @@ body {
   animation: blobFloat 12s ease-in-out infinite;
 }
 
-[data-theme="dark"] .blob { opacity: 0.06; filter: blur(100px); }
+[data-theme="dark"] .blob { display: none; }
+[data-theme="dark"] body { background: #050812; }
 
 .blob-1 {
   width: 600px; height: 600px;
