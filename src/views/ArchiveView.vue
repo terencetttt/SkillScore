@@ -5,7 +5,7 @@
       <div>
         <div class="head-badge">⛓ On-Chain Archive</div>
         <h1 class="head-title">All CV Analyses</h1>
-        <p class="head-sub">Every analysis stored on GenLayer Bradbury — immutable, public, verifiable.</p>
+        <p class="head-sub">Every analysis stored on-chain — immutable, public, verifiable.</p>
       </div>
       <div v-if="!loading" class="count-pill">
         {{ entries.length }} {{ entries.length === 1 ? 'analysis' : 'analyses' }}

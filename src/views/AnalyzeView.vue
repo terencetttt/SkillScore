@@ -8,7 +8,7 @@
         <span class="hero-gradient">before the interview.</span>
       </h1>
       <p class="hero-sub">
-        AI validators on GenLayer Bradbury score your CV across 5 dimensions.
+        Score your CV against any role using AI validators.
         Results are immutable, verifiable, and stored on-chain forever.
       </p>
       <div class="hero-features">
@@ -115,7 +115,7 @@
         </button>
 
         <div class="chain-note">
-          <span class="chain-dot-live" /> GenLayer Bradbury · Chain 4221 · Consensus ~3–5 min
+          <span class="chain-dot-live" /> AI consensus · ~3–5 min · results stored on-chain
         </div>
       </div>
     </div>
@@ -150,7 +150,7 @@
             {{ shortHash(txHash) }} ↗
           </a>
         </div>
-        <p class="tracker-note">Validators are independently scoring your CV using AI</p>
+        <p class="tracker-note">AI validators are independently scoring your CV</p>
       </div>
     </div>
 
@@ -300,7 +300,7 @@
       <!-- On-chain proof -->
       <div v-if="txHash" class="proof-bar">
         <span class="proof-icon">⛓</span>
-        <span>Stored on GenLayer Bradbury — immutable & verifiable</span>
+        <span>Analysis stored on-chain — immutable & publicly verifiable</span>
         <a :href="`https://explorer-bradbury.genlayer.com/tx/${txHash}`" target="_blank" class="tx-link">
           View on explorer ↗
         </a>
