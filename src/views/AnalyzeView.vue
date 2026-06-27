@@ -49,7 +49,7 @@
             <span>Extracting text from PDF…</span>
           </div>
           <div v-else-if="cvFile" class="drop-inner">
-            <div class="drop-icon drop-icon-done">✅</div>
+            <div class="drop-icon drop-icon-done"></div>
             <span class="drop-name">{{ cvFile.name }}</span>
             <span class="drop-hint">Click to replace</span>
           </div>
@@ -97,7 +97,6 @@
               :class="['level-btn', expLevel === lvl.id ? 'level-active' : '']"
               @click="expLevel = lvl.id"
             >
-              <span class="lvl-icon">{{ lvl.icon }}</span>
               {{ lvl.label }}
             </button>
           </div>
@@ -265,13 +264,13 @@
       <!-- Skills -->
       <div class="skills-grid">
         <div class="card">
-          <div class="card-label">✓ Skills Found</div>
+          <div class="card-label">Skills Found</div>
           <div class="tag-cloud">
             <span v-for="s in result.found_skills" :key="s" class="tag tag-found">{{ s }}</span>
           </div>
         </div>
         <div class="card">
-          <div class="card-label">✗ Missing for Role</div>
+          <div class="card-label">Missing for Role</div>
           <div class="tag-cloud">
             <span v-for="s in result.missing_skills" :key="s" class="tag tag-missing">{{ s }}</span>
           </div>
@@ -334,9 +333,9 @@ const fileInput   = ref<HTMLInputElement | null>(null)
 let statusInterval: ReturnType<typeof setInterval> | null = null
 
 const levels = [
-  { id: 'entry',  icon: '🌱', label: 'Entry'     },
-  { id: 'mid',    icon: '⚡', label: 'Mid-Level'  },
-  { id: 'senior', icon: '🚀', label: 'Senior'    },
+  { id: 'entry',  label: 'Entry'     },
+  { id: 'mid',    label: 'Mid-Level' },
+  { id: 'senior', label: 'Senior'    },
 ]
 
 const stages = [
