@@ -1,6 +1,5 @@
 import { createClient } from 'genlayer-js'
 import { testnetBradbury } from 'genlayer-js/chains'
-import { TransactionStatus } from 'genlayer-js/types'
 import { ref } from 'vue'
 
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS as `0x${string}`
@@ -29,9 +28,9 @@ export async function writeWithRetry(
   functionName: string,
   args: any[],
   onHash?: (hash: string) => void,
-  maxAttempts = 10,
 ): Promise<{ hash: string; receipt: any }> {
   const client = getClient()
+
   const hash = await client.writeContract({
     address: CONTRACT_ADDRESS,
     functionName,
@@ -40,21 +39,24 @@ export async function writeWithRetry(
   })
   if (onHash) onHash(hash as string)
 
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+  // Manual polling — check every 12s for up to 15 minutes
+  const MAX_WAIT  = 15 * 60 * 1000  // 15 minutes
+  const INTERVAL  = 12_000           // 12 seconds
+  const startTime = Date.now()
+
+  while (Date.now() - startTime < MAX_WAIT) {
+    await new Promise(r => setTimeout(r, INTERVAL))
     try {
-      const receipt = await (client.waitForTransactionReceipt as any)({
-        hash,
-        status: TransactionStatus.ACCEPTED,
-        timeout: 30_000 * attempt, // Escalating: 30s, 60s, 90s ...
-      })
-      return { hash: hash as string, receipt }
-    } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : String(e)
-      if (msg.includes('wallet_getSnaps')) continue // harmless Rabby noise
-      if (attempt === maxAttempts) throw e
+      const tx     = await (client as any).getTransaction({ hash })
+      const status = typeof tx?.status === 'number' ? tx.status : 0
+      // 4 = ACCEPTED, 5 = FINALIZED — both mean consensus is done
+      if (status >= 4) return { hash: hash as string, receipt: tx }
+    } catch {
+      // transient network error — keep polling
     }
   }
-  throw new Error('Transaction failed after max attempts')
+
+  throw new Error('Transaction timed out after 15 minutes. Your CV is still being processed on-chain.')
 }
 
 export async function readContract(functionName: string, args: any[] = []): Promise<any> {
