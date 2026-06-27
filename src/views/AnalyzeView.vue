@@ -1,242 +1,278 @@
-﻿<template>
+<template>
   <div class="page">
     <!-- Hero -->
     <div class="hero">
+      <div class="hero-badge">✦ Powered by GenLayer Bradbury</div>
       <h1 class="hero-title">
-        Score your CV.<br />
-        <span class="hero-gradient">On-chain. For real.</span>
+        Know your CV score<br />
+        <span class="hero-gradient">before the interview.</span>
       </h1>
       <p class="hero-sub">
-        AI validators on GenLayer Bradbury score your CV across 5 dimensions â€”
-        technical skills, experience, education, achievements, and presentation.
-        Results are immutable and publicly verifiable.
+        AI validators on GenLayer Bradbury score your CV across 5 dimensions.
+        Results are immutable, verifiable, and stored on-chain forever.
       </p>
+      <div class="hero-features">
+        <span class="feat">📄 PDF Upload</span>
+        <span class="feat">🎯 Role-Specific</span>
+        <span class="feat">⛓ On-Chain</span>
+        <span class="feat">🤖 AI Validators</span>
+        <span class="feat">📊 5 Dimensions</span>
+      </div>
     </div>
 
-    <!-- Upload / Input form -->
-    <div v-if="!result && !isSubmitting" class="form-section">
-      <!-- PDF upload tab -->
-      <div class="mode-tabs">
-        <button :class="['mode-tab', inputMode === 'pdf' ? 'active' : '']" @click="inputMode = 'pdf'">
-          ðŸ“„ Upload PDF
-        </button>
-        <button :class="['mode-tab', inputMode === 'text' ? 'active' : '']" @click="inputMode = 'text'">
-          âœï¸ Paste Text
-        </button>
-      </div>
-
-      <!-- PDF drop zone -->
-      <div
-        v-if="inputMode === 'pdf'"
-        class="drop-zone"
-        :class="{ 'drop-over': dragOver, 'drop-done': cvFile && !isExtracting }"
-        @click="fileInput?.click()"
-        @dragover.prevent="dragOver = true"
-        @dragleave="dragOver = false"
-        @drop.prevent="onDrop"
-      >
-        <input ref="fileInput" type="file" accept=".pdf" style="display:none" @change="onFileChange" />
-        <div v-if="isExtracting" class="drop-content">
-          <div class="spinner" />
-          <span>Extracting text from PDFâ€¦</span>
+    <!-- Input form -->
+    <div v-if="!result && !isSubmitting && !timedOut" class="form-wrap">
+      <div class="card form-card">
+        <!-- Tabs -->
+        <div class="tabs">
+          <button :class="['tab', inputMode === 'pdf' ? 'tab-active' : '']" @click="inputMode = 'pdf'">
+            <span>📄</span> Upload PDF
+          </button>
+          <button :class="['tab', inputMode === 'text' ? 'tab-active' : '']" @click="inputMode = 'text'">
+            <span>✏️</span> Paste Text
+          </button>
         </div>
-        <div v-else-if="cvFile" class="drop-content">
-          <span style="font-size:28px">âœ…</span>
-          <span class="drop-name">{{ cvFile.name }}</span>
-          <span class="drop-hint">Click to replace</span>
-        </div>
-        <div v-else class="drop-content">
-          <span style="font-size:32px">ðŸ“„</span>
-          <span class="drop-main">Drop your CV here, or click to browse</span>
-          <span class="drop-hint">PDF only Â· max 10 MB</span>
-        </div>
-      </div>
 
-      <!-- Text paste area -->
-      <div v-if="inputMode === 'text'">
-        <textarea
-          v-model="cvText"
-          class="cv-textarea"
-          placeholder="Paste your full CV text hereâ€¦"
-          rows="12"
-        />
-      </div>
-
-      <!-- Target role -->
-      <label class="field-label">Target Role</label>
-      <input
-        v-model="targetRole"
-        class="input-field"
-        type="text"
-        placeholder="e.g. Full Stack Engineer, Product Manager, Data Analystâ€¦"
-        style="margin-bottom: 16px"
-        @keydown.enter="submit"
-      />
-
-      <!-- Experience level -->
-      <label class="field-label">Experience Level</label>
-      <div class="level-group">
-        <button
-          v-for="lvl in levels"
-          :key="lvl.id"
-          :class="['level-btn', expLevel === lvl.id ? 'active' : '']"
-          @click="expLevel = lvl.id"
+        <!-- PDF drop -->
+        <div
+          v-if="inputMode === 'pdf'"
+          class="drop-zone"
+          :class="{ 'drop-over': dragOver, 'drop-done': cvFile && !isExtracting }"
+          @click="fileInput?.click()"
+          @dragover.prevent="dragOver = true"
+          @dragleave="dragOver = false"
+          @drop.prevent="onDrop"
         >
-          {{ lvl.icon }} {{ lvl.label }}
-        </button>
-      </div>
-
-      <!-- Error -->
-      <div v-if="error" class="error-box">âš  {{ error }}</div>
-
-      <!-- Submit -->
-      <button class="btn-primary" :disabled="isSubmitting" @click="submit" style="margin-top: 4px">
-        Submit CV to Bradbury Chain
-      </button>
-
-      <!-- Chain info pill -->
-      <div class="chain-pill">
-        <span class="chain-dot" />
-        GenLayer Bradbury Testnet Â· Chain ID 4221 Â· Consensus takes 3â€“5 min
-      </div>
-    </div>
-
-    <!-- Consensus tracker (while submitting) -->
-    <div v-if="isSubmitting" class="consensus-section fade-up">
-      <div class="card" style="text-align:center; padding: 36px 24px">
-        <div class="card-label">Transaction Status</div>
-        <div class="consensus-stages">
-          <div
-            v-for="(stage, i) in stages"
-            :key="stage.name"
-            class="stage"
-            :class="{
-              'stage-done':   currentStage > i,
-              'stage-active': currentStage === i,
-              'stage-pending': currentStage < i
-            }"
-          >
-            <div class="stage-icon">
-              <span v-if="currentStage > i">âœ“</span>
-              <div v-else-if="currentStage === i" class="spinner" />
-              <span v-else>{{ i + 1 }}</span>
+          <input ref="fileInput" type="file" accept=".pdf" style="display:none" @change="onFileChange" />
+          <div v-if="isExtracting" class="drop-inner">
+            <div class="spinner" />
+            <span>Extracting text from PDF…</span>
+          </div>
+          <div v-else-if="cvFile" class="drop-inner">
+            <div class="drop-icon drop-icon-done">✅</div>
+            <span class="drop-name">{{ cvFile.name }}</span>
+            <span class="drop-hint">Click to replace</span>
+          </div>
+          <div v-else class="drop-inner">
+            <div class="drop-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 12 15 15"/>
+              </svg>
             </div>
-            <span class="stage-name">{{ stage.name }}</span>
+            <span class="drop-main">Drop your CV here or click to browse</span>
+            <span class="drop-hint">PDF only · max 10 MB</span>
           </div>
         </div>
 
-        <p v-if="txHash" class="tx-hash-line">
-          TX:
-          <a
-            :href="`https://explorer-bradbury.genlayer.com/tx/${txHash}`"
-            target="_blank"
-            class="tx-link"
-          >{{ shortHash(txHash) }} â†—</a>
+        <!-- Text area -->
+        <textarea
+          v-if="inputMode === 'text'"
+          v-model="cvText"
+          class="cv-textarea"
+          placeholder="Paste your full CV text here…"
+          rows="10"
+        />
+
+        <!-- Target role -->
+        <div class="field-group">
+          <label class="field-label">Target Role</label>
+          <input
+            v-model="targetRole"
+            type="text"
+            class="input-field"
+            placeholder="e.g. Backend Engineer, Product Manager, Data Analyst…"
+            @keydown.enter="submit"
+          />
+        </div>
+
+        <!-- Experience level -->
+        <div class="field-group">
+          <label class="field-label">Experience Level</label>
+          <div class="level-group">
+            <button
+              v-for="lvl in levels"
+              :key="lvl.id"
+              :class="['level-btn', expLevel === lvl.id ? 'level-active' : '']"
+              @click="expLevel = lvl.id"
+            >
+              <span class="lvl-icon">{{ lvl.icon }}</span>
+              {{ lvl.label }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Error -->
+        <div v-if="error" class="error-box">
+          <span>⚠</span> {{ error }}
+        </div>
+
+        <!-- Submit -->
+        <button class="btn-primary" :disabled="isSubmitting" @click="submit">
+          Submit CV to Bradbury Chain
+        </button>
+
+        <div class="chain-note">
+          <span class="chain-dot-live" /> GenLayer Bradbury · Chain 4221 · Consensus ~3–5 min
+        </div>
+      </div>
+    </div>
+
+    <!-- Consensus tracker -->
+    <div v-if="isSubmitting" class="tracker-wrap fade-up">
+      <div class="card tracker-card">
+        <div class="tracker-header">
+          <div class="tracker-pulse" />
+          <span class="tracker-title">AI Validators Working</span>
+        </div>
+        <div class="stages">
+          <div v-for="(stage, i) in stages" :key="stage.name" class="stage">
+            <div class="stage-line" v-if="i > 0" :class="{ 'line-done': currentStage > i }" />
+            <div class="stage-node" :class="{
+              'node-done':    currentStage > i,
+              'node-active':  currentStage === i,
+              'node-pending': currentStage < i,
+            }">
+              <span v-if="currentStage > i" class="node-check">✓</span>
+              <div v-else-if="currentStage === i" class="spinner" />
+              <span v-else class="node-num">{{ i + 1 }}</span>
+            </div>
+            <span class="stage-label" :class="{
+              'label-done':   currentStage > i,
+              'label-active': currentStage === i,
+            }">{{ stage.name }}</span>
+          </div>
+        </div>
+        <div v-if="txHash" class="tx-row">
+          TX: <a :href="`https://explorer-bradbury.genlayer.com/tx/${txHash}`" target="_blank" class="tx-link">
+            {{ shortHash(txHash) }} ↗
+          </a>
+        </div>
+        <p class="tracker-note">Validators are independently scoring your CV using AI</p>
+      </div>
+    </div>
+
+    <!-- Timed out -->
+    <div v-if="timedOut && !isSubmitting && !result" class="tracker-wrap fade-up">
+      <div class="card tracker-card" style="text-align:center">
+        <div style="font-size:40px;margin-bottom:12px">⏳</div>
+        <div class="card-label">Still Processing</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.7">
+          Your transaction is on-chain and being processed. Validators are running — click below to check if results are ready.
         </p>
-        <p class="consensus-note">
-          AI validators are independently analyzing your CV â€” this takes 3â€“5 minutes.
-        </p>
+        <div v-if="error" class="error-box" style="margin-bottom:16px;text-align:left">⚠ {{ error }}</div>
+        <button class="btn-primary" @click="checkResults" style="max-width:260px;margin:0 auto">
+          Check Results Now
+        </button>
+        <p style="font-size:11px;color:var(--dim);margin-top:12px">Try every 1–2 minutes</p>
       </div>
     </div>
 
     <!-- Results -->
-    <div v-if="result" class="results-section fade-up">
+    <div v-if="result" class="results fade-up">
       <div class="results-header">
         <div>
           <h2 class="results-title">Analysis Complete</h2>
           <p class="results-meta">
-            {{ targetRole }} Â·
-            <span style="color: var(--muted)">{{ expLevel }} level</span>
+            <span class="meta-role">{{ targetRole }}</span>
+            · {{ expLevel }} level
           </p>
         </div>
-        <button class="btn-ghost" @click="reset">â† Analyze Another</button>
+        <button class="btn-ghost" @click="reset">← Analyze Another</button>
       </div>
 
-      <!-- Score + Verdict row -->
-      <div class="row-2" style="margin-bottom: 14px">
-        <!-- Hex score card -->
-        <div class="card" style="text-align:center; padding: 28px 20px">
+      <!-- Score + Summary -->
+      <div class="top-grid">
+        <!-- Circular score -->
+        <div class="card score-card">
           <div class="card-label">Overall Score</div>
-          <div class="hex-wrap">
-            <svg width="172" height="190" viewBox="0 0 172 190" fill="none">
-              <polygon
-                points="86,6 162,47 162,143 86,184 10,143 10,47"
-                :fill="scoreColor(result.overall_score) + '14'"
-                :stroke="scoreColor(result.overall_score)"
-                stroke-width="1.5"
+          <div class="ring-wrap">
+            <svg class="score-ring" viewBox="0 0 140 140">
+              <circle class="ring-track" cx="70" cy="70" r="58" />
+              <circle
+                class="ring-fill"
+                cx="70" cy="70" r="58"
+                :style="{
+                  stroke: scoreColor(result.overall_score),
+                  strokeDashoffset: ringOffset(result.overall_score)
+                }"
               />
-              <polygon
-                points="86,20 150,57 150,133 86,170 22,133 22,57"
-                fill="none"
-                :stroke="scoreColor(result.overall_score)"
-                stroke-width="0.5"
-                opacity="0.3"
-              />
+              <defs>
+                <filter id="glow-filter">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
             </svg>
-            <div class="hex-content">
-              <span class="hex-score" :style="{ color: scoreColor(result.overall_score) }">
+            <div class="ring-inner">
+              <span class="ring-score" :style="{ color: scoreColor(result.overall_score) }">
                 {{ result.overall_score }}
               </span>
-              <span class="hex-label">{{ scoreLabel(result.overall_score) }}</span>
+              <span class="ring-label">{{ scoreLabel(result.overall_score) }}</span>
             </div>
           </div>
-          <span :class="verdictClass(result.verdict)">{{ result.verdict }}</span>
+          <div class="score-footer">
+            <span :class="verdictClass(result.verdict)">{{ result.verdict }}</span>
+          </div>
         </div>
 
         <!-- Summary + ATS -->
-        <div style="display:flex; flex-direction:column; gap:12px">
-          <div class="card" style="flex:1">
-            <div class="card-label">Assessment</div>
+        <div class="side-col">
+          <div class="card summary-card">
+            <div class="card-label">AI Assessment</div>
             <p class="summary-text">{{ result.summary }}</p>
           </div>
-          <div class="card">
+          <div class="card ats-card">
             <div class="card-label">ATS Compatibility</div>
             <div class="ats-row">
-              <span class="ats-dot" :style="{ background: atsColor(result.ats_compatibility) }" />
-              <span class="ats-label" :style="{ color: atsColor(result.ats_compatibility) }">
+              <div class="ats-dot-big" :style="{ background: atsColor(result.ats_compatibility) }" />
+              <span class="ats-score" :style="{ color: atsColor(result.ats_compatibility) }">
                 {{ result.ats_compatibility }}
               </span>
+              <span class="ats-sub">Applicant Tracking System</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Score breakdown -->
-      <div class="card" style="margin-bottom:14px">
+      <div class="card breakdown-card">
         <div class="card-label">Score Breakdown</div>
-        <div
-          v-for="cat in categories"
-          :key="cat.key"
-          class="cat-bar"
-        >
-          <div class="cat-row">
-            <span class="cat-name">{{ cat.label }}</span>
-            <span class="cat-score" :style="{ color: scoreColor(result[cat.key]) }">
-              {{ result[cat.key] }}
-            </span>
-          </div>
-          <div class="bar-track">
-            <div
-              class="bar-fill"
-              :style="{
-                width: result[cat.key] + '%',
-                background: `linear-gradient(90deg, ${scoreColor(result[cat.key])}55, ${scoreColor(result[cat.key])})`
-              }"
-            />
+        <div class="bars">
+          <div v-for="(cat, i) in categories" :key="cat.key" class="bar-item">
+            <div class="bar-meta">
+              <span class="bar-name">{{ cat.label }}</span>
+              <span class="bar-val" :style="{ color: scoreColor(result[cat.key]) }">
+                {{ result[cat.key] }}
+              </span>
+            </div>
+            <div class="bar-track">
+              <div
+                class="bar-fill"
+                :style="{
+                  width: result[cat.key] + '%',
+                  background: `linear-gradient(90deg, ${scoreColor(result[cat.key])}66, ${scoreColor(result[cat.key])})`,
+                  boxShadow: `0 0 12px ${scoreColor(result[cat.key])}40`,
+                  animationDelay: (i * 0.12) + 's'
+                }"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Skills grid -->
-      <div class="row-2" style="margin-bottom:14px">
+      <!-- Skills -->
+      <div class="skills-grid">
         <div class="card">
-          <div class="card-label">Skills Found</div>
+          <div class="card-label">✓ Skills Found</div>
           <div class="tag-cloud">
             <span v-for="s in result.found_skills" :key="s" class="tag tag-found">{{ s }}</span>
           </div>
         </div>
         <div class="card">
-          <div class="card-label">Missing for Role</div>
+          <div class="card-label">✗ Missing for Role</div>
           <div class="tag-cloud">
             <span v-for="s in result.missing_skills" :key="s" class="tag tag-missing">{{ s }}</span>
           </div>
@@ -244,11 +280,11 @@
       </div>
 
       <!-- Strengths + Recommendations -->
-      <div class="row-strengths">
+      <div class="bottom-grid">
         <div class="card">
           <div class="card-label">Key Strengths</div>
           <div v-for="(s, i) in result.strengths" :key="i" class="strength-item">
-            <span class="check">âœ“</span>
+            <div class="strength-icon">✓</div>
             <span>{{ s }}</span>
           </div>
         </div>
@@ -263,12 +299,11 @@
 
       <!-- On-chain proof -->
       <div v-if="txHash" class="proof-bar">
-        <span>â›“ Stored on GenLayer Bradbury</span>
-        <a
-          :href="`https://explorer-bradbury.genlayer.com/tx/${txHash}`"
-          target="_blank"
-          class="tx-link"
-        >View transaction â†—</a>
+        <span class="proof-icon">⛓</span>
+        <span>Stored on GenLayer Bradbury — immutable & verifiable</span>
+        <a :href="`https://explorer-bradbury.genlayer.com/tx/${txHash}`" target="_blank" class="tx-link">
+          View on explorer ↗
+        </a>
       </div>
     </div>
   </div>
@@ -279,32 +314,30 @@ import { ref, onUnmounted } from 'vue'
 import * as pdfjsLib from 'pdfjs-dist'
 import { connectWallet, walletAddress, isConnected, writeWithRetry, readContract, pollTxStatus } from '../client'
 
-// Worker for PDF.js (CDN)
 ;(pdfjsLib as any).GlobalWorkerOptions.workerSrc =
   `https://unpkg.com/pdfjs-dist@${(pdfjsLib as any).version}/build/pdf.worker.min.js`
 
-// â”€â”€ State â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const inputMode = ref<'pdf' | 'text'>('pdf')
-const cvFile    = ref<File | null>(null)
-const cvText    = ref('')
-const targetRole = ref('')
-const expLevel  = ref('mid')
-const dragOver  = ref(false)
+const inputMode   = ref<'pdf' | 'text'>('pdf')
+const cvFile      = ref<File | null>(null)
+const cvText      = ref('')
+const targetRole  = ref('')
+const expLevel    = ref('mid')
+const dragOver    = ref(false)
 const isExtracting = ref(false)
 const isSubmitting = ref(false)
 const currentStage = ref(0)
-const txHash    = ref('')
-const result    = ref<any>(null)
-const error     = ref('')
-const fileInput = ref<HTMLInputElement | null>(null)
+const txHash      = ref('')
+const result      = ref<any>(null)
+const error       = ref('')
+const timedOut    = ref(false)
+const fileInput   = ref<HTMLInputElement | null>(null)
 
 let statusInterval: ReturnType<typeof setInterval> | null = null
 
-// â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const levels = [
-  { id: 'entry',  icon: 'ðŸŒ±', label: 'Entry'     },
-  { id: 'mid',    icon: 'âš¡', label: 'Mid-Level'  },
-  { id: 'senior', icon: 'ðŸš€', label: 'Senior'    },
+  { id: 'entry',  icon: '🌱', label: 'Entry'     },
+  { id: 'mid',    icon: '⚡', label: 'Mid-Level'  },
+  { id: 'senior', icon: '🚀', label: 'Senior'    },
 ]
 
 const stages = [
@@ -324,12 +357,11 @@ const categories = [
 ]
 
 const expMap: Record<string, string> = {
-  entry:  'entry/graduate (0â€“2 years)',
-  mid:    'mid-level (2â€“5 years)',
+  entry:  'entry/graduate (0–2 years)',
+  mid:    'mid-level (2–5 years)',
   senior: 'senior (5+ years)',
 }
 
-// â”€â”€ PDF helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function extractPdf(file: File): Promise<string> {
   const buf = await file.arrayBuffer()
   const pdf = await (pdfjsLib as any).getDocument({ data: buf }).promise
@@ -337,9 +369,7 @@ async function extractPdf(file: File): Promise<string> {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i)
     const content = await page.getTextContent()
-    text += content.items
-      .map((item: any) => ('str' in item ? item.str : ''))
-      .join(' ') + '\n'
+    text += content.items.map((item: any) => ('str' in item ? item.str : '')).join(' ') + '\n'
   }
   return text.trim()
 }
@@ -347,34 +377,25 @@ async function extractPdf(file: File): Promise<string> {
 async function handleFile(file: File) {
   if (!file) return
   if (file.type !== 'application/pdf') { error.value = 'Only PDF files are accepted.'; return }
-  if (file.size > 10 * 1024 * 1024) { error.value = 'File is too large. Max 10 MB.'; return }
-  cvFile.value = file
-  error.value = ''
-  isExtracting.value = true
-  try {
-    cvText.value = await extractPdf(file)
-  } catch {
-    error.value = 'Could not extract text. Please use the Paste Text tab instead.'
-    inputMode.value = 'text'
-  } finally {
-    isExtracting.value = false
-  }
+  if (file.size > 10 * 1024 * 1024) { error.value = 'File too large. Max 10 MB.'; return }
+  cvFile.value = file; error.value = ''; isExtracting.value = true
+  try { cvText.value = await extractPdf(file) }
+  catch { error.value = 'Could not extract text. Use Paste Text instead.'; inputMode.value = 'text' }
+  finally { isExtracting.value = false }
 }
 
 function onFileChange(e: Event) {
   const f = (e.target as HTMLInputElement).files?.[0]
   if (f) handleFile(f)
 }
-
 function onDrop(e: DragEvent) {
   dragOver.value = false
   const f = e.dataTransfer?.files?.[0]
   if (f) handleFile(f)
 }
 
-// â”€â”€ Submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 async function submit() {
-  if (!cvText.value.trim()) { error.value = 'Please provide your CV content.'; return }
+  if (!cvText.value.trim()) { error.value = 'Please provide your CV.'; return }
   if (!targetRole.value.trim()) { error.value = 'Please enter a target role.'; return }
   error.value = ''
 
@@ -383,320 +404,387 @@ async function submit() {
     catch (e: any) { error.value = e.message; return }
   }
 
-  isSubmitting.value = true
-  currentStage.value = 0
-  result.value = null
-  txHash.value = ''
+  isSubmitting.value = true; currentStage.value = 0; result.value = null; txHash.value = ''
 
   try {
     const { hash } = await writeWithRetry(
       'submit_cv',
       [cvText.value, targetRole.value, expMap[expLevel.value]],
       (h) => {
-        txHash.value = h
-        currentStage.value = 1
-
-        // Poll for status updates
+        txHash.value = h; currentStage.value = 1
         statusInterval = setInterval(async () => {
           const s = await pollTxStatus(h)
-          // Map GenLayer status numbers (0-5) to our 5-stage UI (0-4)
           if (s >= 1) currentStage.value = Math.min(s, 4)
-          if (s >= 4) {
-            if (statusInterval) clearInterval(statusInterval)
-          }
+          if (s >= 4 && statusInterval) clearInterval(statusInterval)
         }, 8000)
       },
     )
-
     currentStage.value = 4
     if (statusInterval) clearInterval(statusInterval)
-
-    // Fetch results from chain
     const data = await readContract('get_user_latest', [walletAddress.value])
-    result.value = data
-    txHash.value = hash
+    result.value = data; txHash.value = hash
   } catch (e: any) {
-    error.value = e.message
+    const msg = e.message || ''
+    if (msg.includes('Timed out') || msg.includes('timeout') || msg.includes('current status')) {
+      timedOut.value = true
+    } else { error.value = msg }
   } finally {
     isSubmitting.value = false
     if (statusInterval) clearInterval(statusInterval)
   }
 }
 
+async function checkResults() {
+  if (!walletAddress.value) return
+  timedOut.value = false; error.value = ''
+  try {
+    const data = await readContract('get_user_latest', [walletAddress.value])
+    if (data) { result.value = data }
+    else { timedOut.value = true; error.value = 'Not ready yet — try again in 1–2 minutes.' }
+  } catch { timedOut.value = true; error.value = 'Could not fetch yet. Try again shortly.' }
+}
+
 function reset() {
-  result.value = null
-  cvFile.value = null
-  cvText.value = ''
-  targetRole.value = ''
-  txHash.value = ''
-  error.value = ''
-  currentStage.value = 0
-  inputMode.value = 'pdf'
+  result.value = null; cvFile.value = null; cvText.value = ''
+  targetRole.value = ''; txHash.value = ''; error.value = ''
+  timedOut.value = false; currentStage.value = 0; inputMode.value = 'pdf'
 }
 
-onUnmounted(() => {
-  if (statusInterval) clearInterval(statusInterval)
-})
+onUnmounted(() => { if (statusInterval) clearInterval(statusInterval) })
 
-// â”€â”€ Display helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function scoreColor(s: number): string {
-  return s >= 80 ? '#34D399' : s >= 60 ? '#FBBF24' : '#F87171'
+  return s >= 80 ? 'var(--green)' : s >= 60 ? 'var(--amber)' : 'var(--red)'
 }
-
 function scoreLabel(s: number): string {
   return s >= 85 ? 'Excellent' : s >= 70 ? 'Good' : s >= 55 ? 'Fair' : 'Needs Work'
 }
-
 function verdictClass(v: string): string {
   if (v === 'STRONG FIT')  return 'verdict verdict-STRONG'
   if (v === 'GOOD FIT')    return 'verdict verdict-GOOD'
   if (v === 'PARTIAL FIT') return 'verdict verdict-PARTIAL'
   return 'verdict verdict-NOT'
 }
-
 function atsColor(a: string): string {
-  return a === 'High' ? '#34D399' : a === 'Medium' ? '#FBBF24' : '#F87171'
+  return a === 'High' ? 'var(--green)' : a === 'Medium' ? 'var(--amber)' : 'var(--red)'
 }
+function shortHash(h: string): string { return h.slice(0, 8) + '…' + h.slice(-6) }
 
-function shortHash(h: string): string {
-  return h.slice(0, 8) + '...' + h.slice(-6)
+const CIRCUMFERENCE = 2 * Math.PI * 58 // ≈ 364.4
+function ringOffset(score: number): number {
+  return CIRCUMFERENCE * (1 - score / 100)
 }
 </script>
 
 <style scoped>
-/* Hero */
-.hero { text-align: center; margin-bottom: 40px; }
+/* ── Hero ──────────────────────────────────────────── */
+.hero { text-align: center; margin-bottom: 44px; }
+
+.hero-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid var(--border2);
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  letter-spacing: 0.5px;
+}
 
 .hero-title {
   font-family: var(--font-head);
-  font-size: 38px;
-  font-weight: 800;
+  font-size: 44px;
+  font-weight: 900;
   line-height: 1.1;
-  letter-spacing: -1.5px;
-  margin-bottom: 14px;
+  letter-spacing: -2px;
+  margin-bottom: 16px;
+  color: var(--text);
 }
 
 .hero-gradient {
-  background: linear-gradient(90deg, var(--violetLt), var(--cyan));
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero-sub {
   color: var(--muted);
   font-size: 15px;
   line-height: 1.7;
-  max-width: 560px;
-  margin: 0 auto;
+  max-width: 520px;
+  margin: 0 auto 24px;
 }
 
-/* Form */
-.form-section { max-width: 540px; margin: 0 auto; }
+.hero-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
 
-.mode-tabs {
+.feat {
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--glass-bg);
+  border: 1px solid var(--border);
+  padding: 5px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  font-weight: 500;
+}
+
+/* ── Form card ──────────────────────────────────────── */
+.form-wrap { max-width: 560px; margin: 0 auto; }
+
+.form-card { padding: 28px; }
+
+.tabs {
   display: flex;
   gap: 6px;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
+  background: var(--surf2);
+  border-radius: 12px;
+  padding: 4px;
 }
 
-.mode-tab {
+.tab {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 9px;
   background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: none;
+  border-radius: 9px;
   color: var(--muted);
   font-size: 13px;
   font-family: var(--font-body);
   cursor: pointer;
   transition: all 0.2s;
+  font-weight: 500;
 }
 
-.mode-tab.active {
-  background: var(--violetDim);
-  border-color: var(--violet);
-  color: var(--violetLt);
+.tab-active {
+  background: var(--surface);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
 }
 
 /* Drop zone */
 .drop-zone {
-  border: 2px dashed var(--border);
-  border-radius: 14px;
+  border: 2px dashed var(--border2);
+  border-radius: 16px;
   padding: 36px 24px;
   text-align: center;
   cursor: pointer;
-  background: var(--surface);
+  background: var(--surf2);
   transition: all 0.2s;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
+.drop-zone:hover { border-color: var(--accent); background: var(--accent-dim); }
+.drop-over { border-color: var(--accent) !important; background: var(--accent-dim) !important; }
+.drop-done { border-color: var(--green) !important; border-style: solid !important; background: var(--green-dim) !important; }
 
-.drop-zone.drop-over { border-color: var(--violet); background: rgba(124,58,237,0.06); }
-.drop-zone.drop-done { border-color: var(--green); background: rgba(52,211,153,0.05); }
-
-.drop-content {
+.drop-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
-
-.drop-main { font-weight: 600; font-size: 14px; }
+.drop-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--accent-dim);
+  border: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.drop-icon-done { font-size: 28px; background: var(--green-dim); border-color: var(--green-bdr); }
+.drop-main { font-weight: 600; font-size: 14px; color: var(--text); }
 .drop-name { font-weight: 600; font-size: 14px; color: var(--green); }
 .drop-hint { font-size: 12px; color: var(--dim); }
 
-/* Textarea */
 .cv-textarea {
   width: 100%;
   padding: 14px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  background: var(--surf2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
   color: var(--text);
   font-size: 13px;
   font-family: var(--font-body);
   resize: vertical;
   outline: none;
-  transition: border-color 0.2s;
-  margin-bottom: 18px;
+  transition: all 0.2s;
+  margin-bottom: 20px;
   line-height: 1.6;
 }
-
-.cv-textarea:focus { border-color: var(--violet); }
+.cv-textarea:focus { border-color: var(--accent); background: var(--surface); box-shadow: 0 0 0 4px var(--accent-dim); }
 .cv-textarea::placeholder { color: var(--dim); }
 
-/* Fields */
+.field-group { margin-bottom: 18px; }
 .field-label {
   display: block;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 2.5px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
   margin-bottom: 8px;
 }
 
-/* Level buttons */
-.level-group {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 24px;
-}
-
+.level-group { display: flex; gap: 8px; }
 .level-btn {
   flex: 1;
-  padding: 10px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 10px 8px;
+  background: var(--surf2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
   color: var(--muted);
   font-size: 13px;
   font-family: var(--font-body);
   cursor: pointer;
   transition: all 0.2s;
-}
-
-.level-btn.active {
-  background: var(--violetDim);
-  border-color: var(--violet);
-  color: var(--violetLt);
-  font-weight: 600;
-}
-
-/* Error */
-.error-box {
-  background: rgba(248,113,113,0.08);
-  border: 1px solid rgba(248,113,113,0.25);
-  border-radius: 8px;
-  padding: 11px 14px;
-  font-size: 13px;
-  color: #FCA5A5;
-  margin-bottom: 16px;
-}
-
-/* Chain pill */
-.chain-pill {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  margin-top: 16px;
+  gap: 6px;
+}
+.level-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.level-active {
+  background: var(--accent-dim) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+
+.error-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--red-dim);
+  border: 1px solid var(--red-bdr);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 13px;
+  color: var(--red);
+  margin-bottom: 16px;
+}
+
+.chain-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
   font-size: 11px;
   color: var(--dim);
 }
-
-.chain-dot {
-  width: 6px;
-  height: 6px;
+.chain-dot-live {
+  width: 6px; height: 6px;
   border-radius: 50%;
   background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
-/* Consensus */
-.consensus-section { max-width: 540px; margin: 0 auto; }
+/* ── Consensus tracker ──────────────────────────────── */
+.tracker-wrap { max-width: 560px; margin: 0 auto; }
 
-.consensus-stages {
+.tracker-card { padding: 32px; }
+
+.tracker-header {
   display: flex;
+  align-items: center;
+  gap: 10px;
   justify-content: center;
-  gap: 8px;
-  margin: 24px 0 20px;
-  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.tracker-pulse {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse-ring 1.5s ease-in-out infinite;
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(108,71,255,0.5); }
+  70%  { box-shadow: 0 0 0 10px rgba(108,71,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(108,71,255,0); }
+}
+.tracker-title {
+  font-family: var(--font-head);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
 }
 
+.stages {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 24px;
+  position: relative;
+}
 .stage {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   flex: 1;
-  min-width: 80px;
+  position: relative;
 }
-
-.stage-icon {
-  width: 34px;
-  height: 34px;
+.stage-line {
+  position: absolute;
+  top: 17px;
+  left: -50%;
+  right: 50%;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+  transition: background 0.3s;
+}
+.line-done { background: var(--accent); }
+.stage-node {
+  width: 34px; height: 34px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
+  position: relative;
+  z-index: 1;
   transition: all 0.3s;
 }
+.node-done   { background: var(--accent); color: #fff; box-shadow: 0 0 16px rgba(108,71,255,0.5); }
+.node-active { background: var(--accent-dim); border: 2px solid var(--accent); }
+.node-pending{ background: var(--surf2); border: 2px solid var(--border); color: var(--dim); }
+.node-check { color: #fff; font-size: 14px; }
+.node-num { color: var(--dim); }
+.stage-label { font-size: 10px; color: var(--dim); text-align: center; }
+.label-done   { color: var(--accent); font-weight: 600; }
+.label-active { color: var(--accent); font-weight: 600; }
 
-.stage-done .stage-icon   { background: rgba(52,211,153,0.15); border: 1px solid #34D399; color: #34D399; }
-.stage-active .stage-icon { background: var(--violetDim); border: 1px solid var(--violet); }
-.stage-pending .stage-icon { background: var(--surfaceHi); border: 1px solid var(--border); color: var(--dim); }
-
-.stage-name {
-  font-size: 11px;
-  color: var(--muted);
-}
-
-.stage-done .stage-name   { color: #34D399; }
-.stage-active .stage-name { color: var(--violetLt); }
-
-.tx-hash-line {
-  font-size: 12px;
-  color: var(--dim);
-  margin-top: 4px;
-}
-
-.tx-link {
-  color: var(--violetLt);
-  text-decoration: none;
-}
-
+.tx-row { font-size: 12px; color: var(--dim); text-align: center; margin-bottom: 8px; }
+.tx-link { color: var(--accent); text-decoration: none; font-weight: 600; }
 .tx-link:hover { text-decoration: underline; }
+.tracker-note { font-size: 12px; color: var(--dim); text-align: center; line-height: 1.6; }
 
-.consensus-note {
-  font-size: 12px;
-  color: var(--dim);
-  margin-top: 14px;
-  line-height: 1.6;
-}
-
-/* Results */
-.results-section { }
+/* ── Results ─────────────────────────────────────────── */
+.results { }
 
 .results-header {
   display: flex;
@@ -704,148 +792,141 @@ function shortHash(h: string): string {
   align-items: flex-start;
   margin-bottom: 24px;
 }
-
 .results-title {
   font-family: var(--font-head);
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 800;
   letter-spacing: -0.5px;
   margin-bottom: 4px;
 }
+.results-meta { font-size: 13px; color: var(--muted); }
+.meta-role { color: var(--accent); font-weight: 600; }
 
-.results-meta { font-size: 13px; color: var(--violetLt); }
-
-.row-2 {
+/* Top grid */
+.top-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  grid-template-columns: 230px 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
-/* Hex badge */
-.hex-wrap {
+.score-card { text-align: center; padding: 28px 20px; }
+
+.ring-wrap {
   position: relative;
-  width: 172px;
-  height: 190px;
-  margin: 0 auto 12px;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 16px;
 }
-
-.hex-content {
+.score-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.ring-track {
+  fill: none;
+  stroke: var(--surf2);
+  stroke-width: 10;
+}
+.ring-fill {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 364.4;
+  stroke-dashoffset: 364.4;
+  transition: stroke-dashoffset 1.4s cubic-bezier(0.16,1,0.3,1);
+  filter: url(#glow-filter);
+}
+.ring-inner {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
 }
-
-.hex-score {
+.ring-score {
   display: block;
-  font-family: var(--font-head);
-  font-size: 52px;
+  font-family: var(--font-num);
+  font-size: 44px;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -2px;
 }
-
-.hex-label {
+.ring-label {
   display: block;
   font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 3px;
+  color: var(--dim);
   text-transform: uppercase;
-  margin-top: 6px;
+  letter-spacing: 2px;
+  margin-top: 4px;
 }
+.score-footer { }
 
-/* ATS */
-.ats-row { display: flex; align-items: center; gap: 8px; }
-.ats-dot { width: 8px; height: 8px; border-radius: 50%; }
-.ats-label { font-family: var(--font-head); font-weight: 700; font-size: 14px; }
+.side-col { display: flex; flex-direction: column; gap: 12px; }
+.summary-card { flex: 1; }
+.summary-text { font-size: 13px; color: var(--muted); line-height: 1.75; }
+.ats-card { }
+.ats-row { display: flex; align-items: center; gap: 10px; }
+.ats-dot-big { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.ats-score { font-family: var(--font-num); font-size: 16px; font-weight: 700; }
+.ats-sub { font-size: 11px; color: var(--dim); }
 
-/* Summary */
-.summary-text { font-size: 13px; color: #C8D5EE; line-height: 1.75; }
-
-/* Category bars */
-.cat-bar { margin-bottom: 18px; }
-
-.cat-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 6px;
-}
-
-.cat-name { font-size: 13px; color: var(--text); font-weight: 500; }
-.cat-score { font-size: 14px; font-weight: 700; font-family: var(--font-head); }
-
-.bar-track {
-  height: 5px;
-  background: var(--surfaceHi);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
+/* Breakdown */
+.breakdown-card { margin-bottom: 16px; }
+.bars { }
+.bar-item { margin-bottom: 16px; }
+.bar-meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.bar-name { font-size: 13px; color: var(--text); font-weight: 500; }
+.bar-val { font-family: var(--font-num); font-size: 14px; font-weight: 700; }
+.bar-track { height: 8px; background: var(--surf2); border-radius: 4px; overflow: hidden; }
 .bar-fill {
   height: 100%;
-  border-radius: 3px;
-  animation: barFill 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
+  border-radius: 4px;
+  animation: barFill 1.2s cubic-bezier(0.16,1,0.3,1) both;
 }
 
-/* Tags */
-.tag-cloud { display: flex; flex-wrap: wrap; gap: 5px; }
-
+/* Skills */
+.skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; }
 .tag {
-  display: inline-block;
   font-size: 11px;
   font-weight: 500;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 20px;
 }
+.tag-found   { background: var(--green-dim); border: 1px solid var(--green-bdr); color: var(--green); }
+.tag-missing { background: var(--red-dim);   border: 1px solid var(--red-bdr);   color: var(--red); }
 
-.tag-found   { background: rgba(52,211,153,0.10); border: 1px solid rgba(52,211,153,0.25); color: #34D399; }
-.tag-missing { background: rgba(248,113,113,0.10); border: 1px solid rgba(248,113,113,0.25); color: #F87171; }
-
-/* Strengths + Recs */
-.row-strengths {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
+/* Bottom grid */
+.bottom-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 16px; }
 .strength-item {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  margin-bottom: 10px;
-  font-size: 13px;
-  color: #C8D5EE;
-  line-height: 1.65;
+  display: flex; gap: 10px; align-items: flex-start;
+  margin-bottom: 10px; font-size: 13px; color: var(--muted); line-height: 1.65;
 }
-
-.check { color: var(--green); flex-shrink: 0; margin-top: 2px; }
-
+.strength-icon {
+  width: 20px; height: 20px;
+  background: var(--green-dim);
+  border: 1px solid var(--green-bdr);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--green);
+  font-size: 10px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
 .rec-item {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  margin-bottom: 14px;
-  font-size: 13px;
-  color: #C8D5EE;
-  line-height: 1.7;
+  display: flex; gap: 10px; align-items: flex-start;
+  margin-bottom: 14px; font-size: 13px; color: var(--muted); line-height: 1.7;
 }
-
 .rec-num {
-  min-width: 22px;
-  height: 22px;
-  background: var(--violetDim);
-  border: 1px solid rgba(124,58,237,0.4);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--violetLt);
-  font-family: var(--font-head);
+  min-width: 22px; height: 22px;
+  background: var(--accent-dim);
+  border: 1px solid var(--border2);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-num);
+  flex-shrink: 0;
 }
 
 /* Proof bar */
@@ -853,13 +934,14 @@ function shortHash(h: string): string {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin-top: 20px;
-  padding: 12px;
+  gap: 12px;
+  padding: 14px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 14px;
   font-size: 12px;
-  color: var(--dim);
+  color: var(--muted);
 }
+.proof-icon { font-size: 16px; }
 </style>
-
