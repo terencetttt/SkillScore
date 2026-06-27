@@ -19,8 +19,8 @@
                 fill="none" stroke="white" stroke-width="0.7" opacity="0.4" />
               <defs>
                 <linearGradient id="logo-grad" x1="0" y1="0" x2="22" y2="24" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#E8A800" />
-                  <stop offset="1" stop-color="#C48C0A" />
+                  <stop stop-color="#FFD700" />
+                  <stop offset="1" stop-color="#0B1033" />
                 </linearGradient>
               </defs>
             </svg>
@@ -39,18 +39,7 @@
           <!-- Theme toggle -->
           <button class="theme-toggle" @click="toggleTheme" :title="theme === 'light' ? 'Dark mode' : 'Light mode'">
             <span class="toggle-track">
-              <span class="toggle-thumb">
-                <svg v-if="theme === 'light'" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                  <circle cx="12" cy="12" r="4"/>
-                  <line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
-                  <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/>
-                  <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
-                  <line x1="6.34" y1="17.66" x2="4.93" y2="19.07"/><line x1="19.07" y1="4.93" x2="17.66" y2="6.34"/>
-                </svg>
-                <svg v-else width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                </svg>
-              </span>
+              <span class="toggle-thumb" />
             </span>
           </button>
 
@@ -80,7 +69,7 @@
 import { ref, onMounted } from 'vue'
 import { connectWallet, walletAddress, isConnected, shortAddress, CONTRACT_ADDRESS } from './client'
 
-const theme = ref<'light' | 'dark'>('light')
+const theme = ref<'light' | 'dark'>('dark')
 
 onMounted(() => {
   const saved = localStorage.getItem('ss-theme') as 'light' | 'dark' | null
@@ -104,37 +93,67 @@ async function connect() {
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── Light mode — warm white + gold ─────────────────── */
+/* ── Light mode — soft white + navy ─────────────────── */
 :root {
-  --bg:         #FDFBF5;
+  --bg:         #F0F4FF;
   --surface:    #FFFFFF;
-  --surf2:      #FFF8E8;
-  --border:     rgba(196,140,10,0.18);
-  --border2:    rgba(196,140,10,0.32);
-  --text:       #1A1200;
-  --muted:      #7A6020;
-  --dim:        #C4A855;
-  --accent:     #C48C0A;
-  --accent-lt:  #E8A800;
-  --accent-dim: rgba(196,140,10,0.10);
-  --accent2:    #D4720A;
+  --surf2:      #E8EEFF;
+  --border:     rgba(11,16,51,0.14);
+  --border2:    rgba(11,16,51,0.25);
+  --text:       #0B1033;
+  --muted:      #3A4A8A;
+  --dim:        #8890C0;
+  --accent:     #0B1033;
+  --accent-lt:  #1A2A6E;
+  --accent-dim: rgba(11,16,51,0.08);
+  --accent2:    #FFD700;
   --green:      #059669;
   --green-dim:  rgba(5,150,105,0.10);
   --green-bdr:  rgba(5,150,105,0.28);
-  --amber:      #B45309;
-  --amber-dim:  rgba(180,83,9,0.10);
-  --amber-bdr:  rgba(180,83,9,0.28);
+  --amber:      #D97706;
+  --amber-dim:  rgba(217,119,6,0.10);
+  --amber-bdr:  rgba(217,119,6,0.28);
   --red:        #DC2626;
   --red-dim:    rgba(220,38,38,0.10);
   --red-bdr:    rgba(220,38,38,0.28);
-  --shadow-sm:  0 2px 8px rgba(196,140,10,0.10);
-  --shadow-md:  0 8px 28px rgba(196,140,10,0.15);
-  --shadow-lg:  0 20px 60px rgba(196,140,10,0.18);
-  --glass-bg:   rgba(255,255,255,0.85);
-  --glass-bdr:  rgba(196,140,10,0.20);
+  --shadow-sm:  0 2px 8px rgba(11,16,51,0.10);
+  --shadow-md:  0 8px 28px rgba(11,16,51,0.14);
+  --shadow-lg:  0 20px 60px rgba(11,16,51,0.18);
+  --glass-bg:   rgba(255,255,255,0.90);
+  --glass-bdr:  rgba(11,16,51,0.14);
   --font-head:  'Outfit', sans-serif;
   --font-body:  'Inter', system-ui, sans-serif;
   --font-num:   'Space Grotesk', sans-serif;
+}
+
+/* ── Dark mode — deep navy + yellow ─────────────────── */
+[data-theme="dark"] {
+  --bg:         #070C24;
+  --surface:    #0D1540;
+  --surf2:      #121C50;
+  --border:     rgba(255,215,0,0.20);
+  --border2:    rgba(255,215,0,0.38);
+  --text:       #EEF2FF;
+  --muted:      #C8B840;
+  --dim:        #4A4400;
+  --accent:     #FFD700;
+  --accent-lt:  #FFE44D;
+  --accent-dim: rgba(255,215,0,0.14);
+  --accent2:    #FFD700;
+  --green:      #34D399;
+  --green-dim:  rgba(52,211,153,0.12);
+  --green-bdr:  rgba(52,211,153,0.30);
+  --amber:      #FFD700;
+  --amber-dim:  rgba(255,215,0,0.12);
+  --amber-bdr:  rgba(255,215,0,0.30);
+  --red:        #FF4444;
+  --red-dim:    rgba(255,68,68,0.12);
+  --red-bdr:    rgba(255,68,68,0.30);
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.55);
+  --shadow-md:  0 8px 28px rgba(0,0,0,0.65);
+  --shadow-lg:  0 20px 60px rgba(0,0,0,0.80);
+  --glass-bg:   rgba(7,10,32,0.96);
+  --glass-bdr:  rgba(255,215,0,0.18);
 }
 
 /* ── Dark mode — pure black + gold only ─────────────── */
@@ -233,21 +252,21 @@ body {
 
 .blob-1 {
   width: 600px; height: 600px;
-  background: radial-gradient(circle, #E8A800, transparent 70%);
+  background: radial-gradient(circle, #1A2A8E, transparent 70%);
   top: -200px; left: -150px;
   animation-delay: 0s;
 }
 
 .blob-2 {
   width: 500px; height: 500px;
-  background: radial-gradient(circle, #C48C0A, transparent 70%);
+  background: radial-gradient(circle, #FFD700, transparent 70%);
   top: 30%; right: -150px;
   animation-delay: -4s;
 }
 
 .blob-3 {
   width: 400px; height: 400px;
-  background: radial-gradient(circle, #F0C030, transparent 70%);
+  background: radial-gradient(circle, #0D1B6E, transparent 70%);
   bottom: -100px; left: 30%;
   animation-delay: -8s;
 }
@@ -364,12 +383,8 @@ body {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
+  background: var(--accent);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
   transform: translateX(0);
 }
@@ -399,16 +414,16 @@ body {
   font-size: 12px;
   font-weight: 600;
   font-family: var(--font-body);
-  color: #fff;
+  color: #0B1033;
   background: var(--accent);
   border: none;
   padding: 7px 16px;
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 12px rgba(196,140,10,0.35);
+  box-shadow: 0 2px 12px rgba(255,215,0,0.35);
 }
-.btn-connect:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(196,140,10,0.45); }
+.btn-connect:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,215,0,0.45); }
 
 .explorer-btn {
   font-size: 11px;
@@ -499,7 +514,7 @@ body {
   gap: 8px;
   width: 100%;
   padding: 15px;
-  background: linear-gradient(135deg, #E8A800, #C47800);
+  background: linear-gradient(135deg, #FFD700, #E8C000);
   border: none;
   border-radius: 14px;
   color: #fff;
@@ -507,7 +522,7 @@ body {
   font-weight: 700;
   font-family: var(--font-head);
   cursor: pointer;
-  box-shadow: 0 4px 24px rgba(196,140,10,0.40);
+  box-shadow: 0 4px 24px rgba(255,215,0,0.35);
   transition: all 0.25s;
   position: relative;
   overflow: hidden;
@@ -521,7 +536,7 @@ body {
   transition: left 0.5s;
 }
 .btn-primary:hover::before { left: 100%; }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(196,140,10,0.50); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,215,0,0.45); }
 .btn-primary:disabled {
   background: var(--surf2);
   color: var(--dim);
