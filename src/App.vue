@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { connectWallet, walletAddress, isConnected, shortAddress, CONTRACT_ADDRESS } from './client'
 
 const theme = ref<'light' | 'dark'>('dark')
