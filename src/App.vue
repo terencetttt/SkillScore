@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :data-theme="theme">
+  <div id="app">
     <nav class="navbar">
       <div class="nav-inner">
         <router-link to="/" class="nav-logo">
