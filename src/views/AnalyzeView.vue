@@ -21,15 +21,15 @@
     </div>
 
     <!-- Input form -->
-    <div v-if="!result && !isSubmitting && !timedOut" class="form-wrap">
+    <div v-if="!isSubmitting && !timedOut" class="form-wrap">
       <div class="card form-card">
         <!-- Tabs -->
         <div class="tabs">
           <button :class="['tab', inputMode === 'pdf' ? 'tab-active' : '']" @click="inputMode = 'pdf'">
-            <span>📄</span> Upload PDF
+            Upload PDF
           </button>
           <button :class="['tab', inputMode === 'text' ? 'tab-active' : '']" @click="inputMode = 'text'">
-            <span>✏️</span> Paste Text
+            Paste Text
           </button>
         </div>
 
@@ -46,7 +46,7 @@
           <input ref="fileInput" type="file" accept=".pdf" style="display:none" @change="onFileChange" />
           <div v-if="isExtracting" class="drop-inner">
             <div class="spinner" />
-            <span>Extracting text from PDF…</span>
+            <span>Extracting text from PDF...</span>
           </div>
           <div v-else-if="cvFile" class="drop-inner">
             <div class="drop-icon drop-icon-done"></div>
@@ -62,7 +62,7 @@
               </svg>
             </div>
             <span class="drop-main">Drop your CV here or click to browse</span>
-            <span class="drop-hint">PDF only · max 10 MB</span>
+            <span class="drop-hint">PDF only - max 10 MB</span>
           </div>
         </div>
 
@@ -71,7 +71,7 @@
           v-if="inputMode === 'text'"
           v-model="cvText"
           class="cv-textarea"
-          placeholder="Paste your full CV text here…"
+          placeholder="Paste your full CV text here..."
           rows="10"
         />
 
@@ -82,7 +82,7 @@
             v-model="targetRole"
             type="text"
             class="input-field"
-            placeholder="e.g. Backend Engineer, Product Manager, Data Analyst…"
+            placeholder="e.g. Backend Engineer, Product Manager, Data Analyst..."
             @keydown.enter="submit"
           />
         </div>
@@ -104,7 +104,7 @@
 
         <!-- Error -->
         <div v-if="error" class="error-box">
-          <span>⚠</span> {{ error }}
+          <span>!</span> {{ error }}
         </div>
 
         <!-- Submit -->
@@ -113,7 +113,7 @@
         </button>
 
         <div class="chain-note">
-          <span class="chain-dot-live" /> AI consensus · results stored on-chain
+          <span class="chain-dot" /> AI consensus - results stored on-chain
         </div>
       </div>
     </div>
@@ -121,7 +121,7 @@
     <!-- Consensus tracker -->
     <div v-if="isSubmitting" class="tracker-wrap fade-up">
       <div class="card tracker-card">
-        <div class="tracker-header">
+        <div class="tracker-hd">
           <div class="tracker-pulse" />
           <span class="tracker-title">AI Validators Working</span>
         </div>
@@ -133,7 +133,7 @@
               'node-active':  currentStage === i,
               'node-pending': currentStage < i,
             }">
-              <span v-if="currentStage > i" class="node-check">✓</span>
+              <span v-if="currentStage > i" class="node-check">&#10003;</span>
               <div v-else-if="currentStage === i" class="spinner" />
               <span v-else class="node-num">{{ i + 1 }}</span>
             </div>
@@ -145,163 +145,25 @@
         </div>
         <div v-if="txHash" class="tx-row">
           TX: <a :href="`https://explorer-bradbury.genlayer.com/tx/${txHash}`" target="_blank" class="tx-link">
-            {{ shortHash(txHash) }} ↗
+            {{ shortHash(txHash) }}
           </a>
         </div>
-        <p class="tracker-note">AI validators are independently scoring your CV</p>
+        <p class="tracker-note">AI validators are independently scoring your CV - this takes 3-5 minutes. You'll be taken to your score automatically.</p>
       </div>
     </div>
 
     <!-- Timed out -->
-    <div v-if="timedOut && !isSubmitting && !result" class="tracker-wrap fade-up">
+    <div v-if="timedOut && !isSubmitting" class="tracker-wrap fade-up">
       <div class="card tracker-card" style="text-align:center">
-        <div style="font-size:40px;margin-bottom:12px">⏳</div>
         <div class="card-label">Still Processing</div>
         <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.7">
-          Your transaction is on-chain and being processed. Validators are running — click below to check if results are ready.
+          Your transaction is on-chain and being processed. Validators are running - click below to check if your score is ready.
         </p>
-        <div v-if="error" class="error-box" style="margin-bottom:16px;text-align:left">⚠ {{ error }}</div>
+        <div v-if="error" class="error-box" style="margin-bottom:16px;text-align:left">! {{ error }}</div>
         <button class="btn-primary" @click="checkResults" style="max-width:260px;margin:0 auto">
-          Check Results Now
+          Check Score Now
         </button>
-        <p style="font-size:11px;color:var(--dim);margin-top:12px">Try every 1–2 minutes</p>
-      </div>
-    </div>
-
-    <!-- Results -->
-    <div v-if="result" class="results fade-up">
-      <div class="results-header">
-        <div>
-          <h2 class="results-title">Analysis Complete</h2>
-          <p class="results-meta">
-            <span class="meta-role">{{ targetRole }}</span>
-            · {{ expLevel }} level
-          </p>
-        </div>
-        <button class="btn-ghost" @click="reset">← Analyze Another</button>
-      </div>
-
-      <!-- Score + Summary -->
-      <div class="top-grid">
-        <!-- Circular score -->
-        <div class="card score-card">
-          <div class="card-label">Overall Score</div>
-          <div class="ring-wrap">
-            <svg class="score-ring" viewBox="0 0 140 140">
-              <circle class="ring-track" cx="70" cy="70" r="58" />
-              <circle
-                class="ring-fill"
-                cx="70" cy="70" r="58"
-                :style="{
-                  stroke: scoreColor(result.overall_score),
-                  strokeDashoffset: ringOffset(result.overall_score)
-                }"
-              />
-              <defs>
-                <filter id="glow-filter">
-                  <feGaussianBlur stdDeviation="3" result="blur"/>
-                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-              </defs>
-            </svg>
-            <div class="ring-inner">
-              <span class="ring-score" :style="{ color: scoreColor(result.overall_score) }">
-                {{ result.overall_score }}
-              </span>
-              <span class="ring-label">{{ scoreLabel(result.overall_score) }}</span>
-            </div>
-          </div>
-          <div class="score-footer">
-            <span :class="verdictClass(result.verdict)">{{ result.verdict }}</span>
-          </div>
-        </div>
-
-        <!-- Summary + ATS -->
-        <div class="side-col">
-          <div class="card summary-card">
-            <div class="card-label">AI Assessment</div>
-            <p class="summary-text">{{ result.summary }}</p>
-          </div>
-          <div class="card ats-card">
-            <div class="card-label">ATS Compatibility</div>
-            <div class="ats-row">
-              <div class="ats-dot-big" :style="{ background: atsColor(result.ats_compatibility) }" />
-              <span class="ats-score" :style="{ color: atsColor(result.ats_compatibility) }">
-                {{ result.ats_compatibility }}
-              </span>
-              <span class="ats-sub">Applicant Tracking System</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Score breakdown -->
-      <div class="card breakdown-card">
-        <div class="card-label">Score Breakdown</div>
-        <div class="bars">
-          <div v-for="(cat, i) in categories" :key="cat.key" class="bar-item">
-            <div class="bar-meta">
-              <span class="bar-name">{{ cat.label }}</span>
-              <span class="bar-val" :style="{ color: scoreColor(result[cat.key]) }">
-                {{ result[cat.key] }}
-              </span>
-            </div>
-            <div class="bar-track">
-              <div
-                class="bar-fill"
-                :style="{
-                  width: result[cat.key] + '%',
-                  background: `linear-gradient(90deg, ${scoreColor(result[cat.key])}66, ${scoreColor(result[cat.key])})`,
-                  boxShadow: `0 0 12px ${scoreColor(result[cat.key])}40`,
-                  animationDelay: (i * 0.12) + 's'
-                }"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Skills -->
-      <div class="skills-grid">
-        <div class="card">
-          <div class="card-label">Skills Found</div>
-          <div class="tag-cloud">
-            <span v-for="s in result.found_skills" :key="s" class="tag tag-found">{{ s }}</span>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-label">Missing for Role</div>
-          <div class="tag-cloud">
-            <span v-for="s in result.missing_skills" :key="s" class="tag tag-missing">{{ s }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Strengths + Recommendations -->
-      <div class="bottom-grid">
-        <div class="card">
-          <div class="card-label">Key Strengths</div>
-          <div v-for="(s, i) in result.strengths" :key="i" class="strength-item">
-            <div class="strength-icon">✓</div>
-            <span>{{ s }}</span>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-label">How to Improve</div>
-          <div v-for="(r, i) in result.recommendations" :key="i" class="rec-item">
-            <div class="rec-num">{{ i + 1 }}</div>
-            <span>{{ r }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- On-chain proof -->
-      <div v-if="txHash" class="proof-bar">
-        
-        <span>Analysis stored on-chain — immutable & publicly verifiable</span>
-        <a :href="`https://explorer-bradbury.genlayer.com/tx/${txHash}`" target="_blank" class="tx-link">
-          View on explorer ↗
-        </a>
+        <p style="font-size:11px;color:var(--dim);margin-top:12px">Try every 1-2 minutes</p>
       </div>
     </div>
   </div>
@@ -309,11 +171,14 @@
 
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import * as pdfjsLib from 'pdfjs-dist'
-import { connectWallet, walletAddress, isConnected, writeWithRetry, readContract, pollTxStatus } from '../client'
+import { connectWallet, walletAddress, isConnected, writeWithRetry, pollTxStatus, resolveLatestId } from '../client'
 
 ;(pdfjsLib as any).GlobalWorkerOptions.workerSrc =
   `https://unpkg.com/pdfjs-dist@${(pdfjsLib as any).version}/build/pdf.worker.min.js`
+
+const router = useRouter()
 
 const inputMode   = ref<'pdf' | 'text'>('pdf')
 const cvFile      = ref<File | null>(null)
@@ -325,7 +190,6 @@ const isExtracting = ref(false)
 const isSubmitting = ref(false)
 const currentStage = ref(0)
 const txHash      = ref('')
-const result      = ref<any>(null)
 const error       = ref('')
 const timedOut    = ref(false)
 const fileInput   = ref<HTMLInputElement | null>(null)
@@ -346,17 +210,9 @@ const stages = [
   { name: 'Accepted'   },
 ]
 
-const categories = [
-  { key: 'technical_score',    label: 'Technical Skills'      },
-  { key: 'experience_score',   label: 'Work Experience'       },
-  { key: 'education_score',    label: 'Education & Certs'     },
-  { key: 'achievements_score', label: 'Achievements & Impact' },
-  { key: 'presentation_score', label: 'CV Presentation & ATS' },
-]
-
 const expMap: Record<string, string> = {
-  entry:  'entry/graduate (0–2 years)',
-  mid:    'mid-level (2–5 years)',
+  entry:  'entry/graduate (0-2 years)',
+  mid:    'mid-level (2-5 years)',
   senior: 'senior (5+ years)',
 }
 
@@ -392,6 +248,18 @@ function onDrop(e: DragEvent) {
   if (f) handleFile(f)
 }
 
+// Send the user to their score page. Uses resolveLatestId, which retries
+// get_user_latest and falls back to scanning all analyses, returning a clean
+// string id that the /score/:id route can use.
+function goToScoreId(id: string | null) {
+  if (id) {
+    router.push('/score/' + id)
+  } else {
+    timedOut.value = true
+    error.value = 'Your score is processing. Use "Check Score Now" in a moment, or open the Archive.'
+  }
+}
+
 async function submit() {
   if (!cvText.value.trim()) { error.value = 'Please provide your CV.'; return }
   if (!targetRole.value.trim()) { error.value = 'Please enter a target role.'; return }
@@ -402,7 +270,7 @@ async function submit() {
     catch (e: any) { error.value = e.message; return }
   }
 
-  isSubmitting.value = true; currentStage.value = 0; result.value = null; txHash.value = ''
+  isSubmitting.value = true; currentStage.value = 0; txHash.value = ''
 
   try {
     const { hash } = await writeWithRetry(
@@ -419,8 +287,9 @@ async function submit() {
     )
     currentStage.value = 4
     if (statusInterval) clearInterval(statusInterval)
-    const data = await readContract('get_user_latest', [walletAddress.value])
-    result.value = data; txHash.value = hash
+    // Resolve the new record's id robustly, then redirect to the score page.
+    const id = await resolveLatestId(walletAddress.value)
+    goToScoreId(id)
   } catch (e: any) {
     const msg = e.message || ''
     if (msg.includes('Timed out') || msg.includes('timeout') || msg.includes('current status')) {
@@ -436,38 +305,15 @@ async function checkResults() {
   if (!walletAddress.value) return
   timedOut.value = false; error.value = ''
   try {
-    const data = await readContract('get_user_latest', [walletAddress.value])
-    if (data) { result.value = data }
-    else { timedOut.value = true; error.value = 'Not ready yet — try again in 1–2 minutes.' }
+    const id = await resolveLatestId(walletAddress.value)
+    if (id) { goToScoreId(id) }
+    else { timedOut.value = true; error.value = 'Not ready yet - try again in 1-2 minutes.' }
   } catch { timedOut.value = true; error.value = 'Could not fetch yet. Try again shortly.' }
 }
 
-function reset() {
-  result.value = null; cvFile.value = null; cvText.value = ''
-  targetRole.value = ''; txHash.value = ''; error.value = ''
-  timedOut.value = false; currentStage.value = 0; inputMode.value = 'pdf'
-}
+function shortHash(h: string): string { return h.slice(0, 8) + '...' + h.slice(-6) }
 
 onUnmounted(() => { if (statusInterval) clearInterval(statusInterval) })
-
-function scoreColor(s: number): string {
-  return 'var(--accent)'
-}
-function scoreLabel(s: number): string {
-  return s >= 85 ? 'Excellent' : s >= 70 ? 'Good' : s >= 55 ? 'Fair' : 'Needs Work'
-}
-function verdictClass(v: string): string {
-  return 'verdict verdict-all'
-}
-function atsColor(a: string): string {
-  return 'var(--accent)'
-}
-function shortHash(h: string): string { return h.slice(0, 8) + '…' + h.slice(-6) }
-
-const CIRCUMFERENCE = 2 * Math.PI * 58 // ≈ 364.4
-function ringOffset(score: number): number {
-  return CIRCUMFERENCE * (1 - score / 100)
-}
 </script>
 
 <style scoped>
@@ -475,6 +321,7 @@ function ringOffset(score: number): number {
 .hero-badge { display: inline-block; font-size: 11px; font-weight: 600; color: var(--yellow); background: var(--y-dim); border: 1px solid var(--border); padding: 4px 14px; border-radius: 20px; margin-bottom: 18px; }
 .hero-title { font-family: var(--font-h); font-size: 42px; font-weight: 900; line-height: 1.1; letter-spacing: -2px; color: var(--text); margin-bottom: 20px; }
 .hero-gradient { color: var(--yellow); }
+.hero-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 540px; margin: 0 auto 22px; }
 .hero-features { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .feat { font-size: 12px; color: var(--muted); background: var(--card); border: 1px solid var(--border); padding: 5px 14px; border-radius: 20px; font-weight: 500; }
 
@@ -490,6 +337,7 @@ function ringOffset(score: number): number {
 .drop-done { border-color: var(--green) !important; border-style: solid !important; background: var(--g-dim) !important; }
 .drop-inner { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .drop-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--y-dim); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--yellow); margin-bottom: 4px; }
+.drop-icon-done { width: 48px; height: 48px; border-radius: 12px; background: var(--g-dim); border: 1px solid var(--g-bdr); }
 .drop-main { font-weight: 600; font-size: 14px; color: var(--text); }
 .drop-name { font-weight: 600; font-size: 14px; color: var(--green); }
 .drop-hint { font-size: 12px; color: var(--dim); }
@@ -526,55 +374,15 @@ function ringOffset(score: number): number {
 .node-active { background: var(--y-dim); border: 2px solid var(--yellow); }
 .node-pending{ background: var(--card2); border: 2px solid var(--border); color: var(--dim); }
 .node-check  { color: #070C24; font-size: 14px; }
+.node-num { font-size: 11px; }
 .stage-label { font-size: 10px; color: var(--dim); text-align: center; }
 .label-done,.label-active { color: var(--yellow); font-weight: 600; }
 .tx-row { font-size: 12px; color: var(--dim); text-align: center; margin-bottom: 8px; }
 .tx-link { color: var(--yellow); text-decoration: none; font-weight: 600; }
 .tx-link:hover { text-decoration: underline; }
-.tracker-note { font-size: 12px; color: var(--dim); text-align: center; }
+.tracker-note { font-size: 12px; color: var(--dim); text-align: center; line-height: 1.6; }
 
-.results {}
-.results-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; }
-.results-title { font-family: var(--font-h); font-size: 22px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 4px; }
-.results-meta { font-size: 13px; color: var(--muted); }
-.meta-role { color: var(--yellow); font-weight: 600; }
-
-.top-grid { display: grid; grid-template-columns: 210px 1fr; gap: 14px; margin-bottom: 14px; }
-.score-card { text-align: center; padding: 24px 16px; }
-.ring-wrap { position: relative; width: 150px; height: 150px; margin: 0 auto 14px; }
-.score-ring { width: 100%; height: 100%; transform: rotate(-90deg); }
-.ring-track { fill: none; stroke: var(--card2); stroke-width: 10; }
-.ring-fill { fill: none; stroke-width: 10; stroke-linecap: round; stroke-dasharray: 364.4; stroke-dashoffset: 364.4; transition: stroke-dashoffset 1.4s cubic-bezier(.16,1,.3,1); }
-.ring-inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
-.ring-score { display: block; font-family: var(--font-n); font-size: 40px; font-weight: 800; line-height: 1; letter-spacing: -2px; }
-.ring-label { display: block; font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 2px; margin-top: 3px; }
-.score-footer {}
-.side-col { display: flex; flex-direction: column; gap: 12px; }
-.summary-text { font-size: 13px; color: var(--muted); line-height: 1.75; }
-.ats-row { display: flex; align-items: center; gap: 10px; }
-.ats-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-.ats-score { font-family: var(--font-n); font-size: 16px; font-weight: 700; }
-.ats-sub { font-size: 11px; color: var(--dim); }
-
-.breakdown-card { margin-bottom: 14px; }
-.bar-item { margin-bottom: 14px; }
-.bar-meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
-.bar-name { font-size: 13px; color: var(--text); font-weight: 500; }
-.bar-val { font-family: var(--font-n); font-size: 13px; font-weight: 700; }
-.bar-track { height: 7px; background: var(--card2); border-radius: 4px; overflow: hidden; }
-.bar-fill { height: 100%; border-radius: 4px; animation: barFill 1.2s cubic-bezier(.16,1,.3,1) both; }
-
-.skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font-size: 11px; font-weight: 500; padding: 4px 11px; border-radius: 20px; }
-.tag-found   { background: var(--g-dim); border: 1px solid var(--g-bdr); color: var(--green); }
-.tag-missing { background: var(--r-dim); border: 1px solid var(--r-bdr); color: var(--red); }
-
-.bottom-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 14px; margin-bottom: 14px; }
-.strength-item { display: flex; gap: 9px; align-items: flex-start; margin-bottom: 10px; font-size: 13px; color: var(--muted); line-height: 1.65; }
-.s-icon { width: 18px; height: 18px; background: var(--g-dim); border: 1px solid var(--g-bdr); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--green); font-size: 9px; flex-shrink: 0; margin-top: 1px; }
-.rec-item { display: flex; gap: 9px; align-items: flex-start; margin-bottom: 12px; font-size: 13px; color: var(--muted); line-height: 1.7; }
-.rec-num { min-width: 20px; height: 20px; background: var(--y-dim); border: 1px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--yellow); font-family: var(--font-n); flex-shrink: 0; }
-
-.proof-bar { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; font-size: 12px; color: var(--dim); }
+@media (max-width: 640px) {
+  .hero-title { font-size: 32px; }
+}
 </style>
